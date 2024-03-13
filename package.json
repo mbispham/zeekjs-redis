@@ -1,0 +1,21 @@
+{
+  "name": "zeekjs-2-redis",
+  "version": "0.1.0",
+  "description": "Adding Zeek logs to Redis",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+git@github.com:mbispham/zeekjs-2-redis"
+  },
+  "license": "BSD-3-Clause",
+  "engines": {
+    "node": ">=20.11.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "redis": "^4.6.13",
+    "validator": "^13.11.0",
+    "winston": "^3.12.0"
+  },
+  "type": "commonjs"
+}
