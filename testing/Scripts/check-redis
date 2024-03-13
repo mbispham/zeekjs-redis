@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+# Check if redis-server is installed
+if command -v redis-server >/dev/null 2>&1; then
+    echo "Redis-server is installed."
+else
+    echo "Redis-server is not installed."
+fi

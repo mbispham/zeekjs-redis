@@ -1,0 +1,252 @@
+#!/bin/sh
+#
+# Hooks to add custom options to the configure script.
+#
+
+ENV_FILE="scripts/.env"
+if [ -f "$ENV_FILE" ]; then
+    . "$ENV_FILE"
+else
+    echo ".env file not found in scripts dir"
+    exit 1
+fi
+
+PACKAGE_JSON_DIR="."
+
+plugin_usage()
+{
+    : # Do nothing
+    cat <<EOF
+    --install-npm-dependencies Install npm dependencies from package.json (N/y)
+    --install-redis-cli        Install redis-cli if not present (N/y)
+    --redis-conf-path=PATH     Redis Conf Path (/etc/redis/redis.conf)
+    --redis-socket-path=PATH   Redis Socket Path (/var/run/redis/redis.sock)
+    --start-redis-server       Start redis server (N/y)
+EOF
+}
+
+plugin_option()
+{
+    case "$1" in
+        --install-npm-dependencies=*)
+            install_deps=$(echo $1 | sed 's/--install-npm-dependencies=//')
+            install_deps=$(echo $install_deps | tr '[:upper:]' '[:lower:]')
+
+            if [ "$install_deps" = "y" ] || [ "$install_deps" = "yes" ]; then
+                echo "Installing npm dependencies..."
+                echo "Checking Node.js and npm installation..."
+
+                # Check for Node.js
+                if ! command -v node > /dev/null 2>&1; then
+                    echo "Node.js is not installed. Please install it."
+                    return 1
+                fi
+
+                # Check for npm
+                if ! command -v npm > /dev/null 2>&1; then
+                    echo "npm is not installed. Please install it."
+                    return 1
+                fi
+
+                # Output version of Node.js
+                node_version=$(node -v)
+                echo "Node.js is installed - $node_version"
+
+                # Output version of npm
+                npm_version=$(npm -v)
+                echo "npm is installed - v$npm_version"
+
+                # Check package.json file
+                if [ ! -f "package.json" ]; then
+                    echo "package.json not found."
+                    return 1
+                fi
+
+                npm ls --depth=0
+                if [ $? -ne 0 ]; then
+                    echo "Installing missing npm packages..."
+                    npm install
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to install npm packages."
+                        return 1
+                    fi
+                    echo "Installed npm packages:"
+                    npm ls --depth=0
+                else
+                    echo "All npm packages are up to date."
+                fi
+            else
+                echo "Skipping npm dependencies installation."
+            fi
+            ;;
+        --install-redis-cli=*)
+            install_redis_cli=$(echo $1 | sed 's/--install-redis-cli=//')
+            install_redis_cli=$(echo $install_redis_cli | tr '[:upper:]' '[:lower:]')
+
+            if [ "$install_redis_cli" = "y" ] || [ "$install_redis_cli" = "yes" ]; then
+                echo "Installing redis_cli..."
+
+                if command -v redis-cli > /dev/null 2>&1; then
+                    echo "redis-cli is already installed. Skipping..."
+                    return 0
+                else
+                    # Identify the OS
+                    OS=""
+                    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                        if [ -f /etc/debian_version ]; then
+                            OS="Debian/Ubuntu"
+                        elif [ -f /etc/redhat-release ]; then
+                            OS="CentOS/RHEL"
+                        fi
+                    elif [[ "$OSTYPE" == "darwin"* ]]; then
+                        OS="macOS"
+                    else
+                        echo "Operating system not supported for automated installation of redis-cli."
+                        exit 1
+                    fi
+
+                    # If OS is recognized, install redis-cli
+                    if [ ! -z "$OS" ]; then
+                        echo "Installing redis-cli for $OS..."
+                        case "$OS" in
+                            "Debian/Ubuntu")
+                                apt-get update
+                                apt-get install redis-server
+                                if [ $? -ne 0 ]; then
+                                    echo "Failed to install redis-server."
+                                    return 1
+                                else
+                                    echo "redis-cli successfully installed."
+                                fi
+                                ;;
+                            "macOS")
+                                brew install redis
+                                if [ $? -ne 0 ]; then
+                                    echo "Failed to install redis-cli using Homebrew."
+                                    return 1
+                                else
+                                    echo "redis-cli successfully installed using Homebrew."
+                                fi
+                                ;;
+                            "CentOS/RHEL")
+                                sudo yum install redis
+                                if [ $? -ne 0 ]; then
+                                    echo "Failed to install redis-cli with yum."
+                                    return 1
+                                else
+                                    echo "Redis-cli successfully installed with yum."
+                                fi
+                                ;;
+                        esac
+                    fi
+                fi
+            else
+                echo "redis-cli is installed."
+            fi
+            ;;
+        --redis-conf-path=*)
+            # Defaults to /etc/redis/redis.conf
+            redis_conf_path=$(echo $1 | sed 's/--redis-conf-path=//')
+            sed -i "s^ZEEKJS_REDIS_CONF_PATH=.*^ZEEKJS_REDIS_CONF_PATH=\"$redis_conf_path\"^" "$ENV_FILE"
+            . "$ENV_FILE"
+            ;;
+        --redis-socket-path=*)
+          # Write out the path to redis.sock
+          # Defaults to /var/run/redis/redis.sock
+          redis_socket_path=$(echo $1 | sed 's/--redis-socket-path=//')
+          sed -i "s^ZEEKJS_REDIS_SOCKET_PATH=.*^ZEEKJS_REDIS_SOCKET_PATH=\"$redis_socket_path\"^" "$ENV_FILE"
+          . "$ENV_FILE"
+            ;;
+        --start-redis-server=*)
+            start_redis_server=$(echo $1 | sed 's/--start-redis-server=//')
+            start_redis_server=$(echo $start_redis_server | tr '[:upper:]' '[:lower:]')  # Fixed variable reference
+
+            if [ "$start_redis_server" = "y" ] || [ "$start_redis_server" = "yes" ]; then
+                echo "Starting redis server ..."
+
+                # loading latest env vars
+                . "$ENV_FILE"
+                # Permissions for the Unix socket
+                SOCKET_PERM="770"
+                # Check if the Redis config file exists
+                if [ ! -f "${ZEEKJS_REDIS_CONF_PATH}" ]; then
+                    echo "Redis configuration file does not exist at ${ZEEKJS_REDIS_CONF_PATH}"
+                    exit 1
+                fi
+
+                # Uncomment lines
+                sed -i '/^# *unixsocket /s/^# *//' "${ZEEKJS_REDIS_CONF_PATH}"
+                sed -i '/^# *unixsocketperm /s/^# *//' "${ZEEKJS_REDIS_CONF_PATH}"
+
+                # Enable and set the Unix socket configuration
+                if grep -q "^unixsocket " "${ZEEKJS_REDIS_CONF_PATH}"; then
+                    # unixsocket entry exists, update it
+                    sed -i "s|^unixsocket .*|unixsocket ${ZEEKJS_REDIS_SOCKET_PATH}|" "${ZEEKJS_REDIS_CONF_PATH}"
+                else
+                    # unixsocket entry does not exist, add it
+                    echo "unixsocket ${ZEEKJS_REDIS_SOCKET_PATH}" | tee -a "${ZEEKJS_REDIS_CONF_PATH}" > /dev/null
+                fi
+
+                if grep -q "^unixsocketperm " "${ZEEKJS_REDIS_CONF_PATH}"; then
+                    # unixsocketperm entry exists, update it
+                    sed -i "s|^unixsocketperm .*|unixsocketperm $SOCKET_PERM|" "${ZEEKJS_REDIS_CONF_PATH}"
+                else
+                    # unixsocketperm entry does not exist, add it
+                    echo "unixsocketperm $SOCKET_PERM" | tee -a "${ZEEKJS_REDIS_CONF_PATH}" > /dev/null
+                fi
+
+                socket_dir=$(dirname "${ZEEKJS_REDIS_SOCKET_PATH}")
+
+                # Check if the dir exists and has the correct permissions
+                socket_dir=$(dirname "${ZEEKJS_REDIS_SOCKET_PATH}")
+                if [ ! -d "$socket_dir" ]; then
+                    echo "Directory $socket_dir does not exist. Creating it..."
+                    mkdir -p "$socket_dir"
+                    if [ $? -eq 0 ]; then
+                        echo "Directory created successfully."
+                        chown redis:redis "$socket_dir"
+                        if [ $? -eq 0 ]; then
+                            echo "Ownership set to redis:redis successfully."
+                        else
+                            echo "Failed to set ownership to redis:redis."
+                            exit 1
+                        fi
+                    else
+                        echo "Failed to create directory."
+                        exit 1
+                    fi
+                else
+                    echo "Directory $socket_dir already exists."
+                    chown redis:redis "$socket_dir"
+                    if [ $? -eq 0 ]; then
+                        echo "Ownership confirmed as redis:redis."
+                    else
+                        echo "Failed to confirm ownership as redis:redis."
+                        exit 1
+                    fi
+                fi
+                OS="$(uname)"
+
+                if [ "$OS" = "Darwin" ]; then
+                    if type brew &>/dev/null && brew list redis &>/dev/null; then
+                        echo "Restarting Redis with Homebrew..."
+                        brew services restart redis
+                    else
+                        echo "Please ensure Redis is installed and managed by Homebrew, or update this script for your setup."
+                    fi
+                elif [ "$OS" = "Linux" ]; then
+                    echo "Restarting Redis with systemctl..."
+                    redis-server /etc/redis/redis.conf --daemonize yes
+                else
+                    echo "Unsupported operating system."
+                fi
+
+                # No need to restart again here if it's already restarted above for specific OS cases
+                echo "Redis configuration updated and server restarted successfully."
+            fi
+            ;;
+        *)
+            return 1;
+            ;;
+    esac
+}

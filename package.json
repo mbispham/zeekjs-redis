@@ -1,0 +1,33 @@
+{
+  "name": "zeekjs-redis",
+  "version": "0.1.0",
+  "description": "Adding Zeek logs to Redis",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+git@github.com:mbispham/zeekjs-redis"
+  },
+  "license": "BSD-3-Clause",
+  "engines": {
+    "node": ">=20.11.1"
+  },
+  "dependencies": {
+    "dotenv": ">=16.4.5",
+    "redis": ">=4.6.13",
+    "safe-stable-stringify": "^2.4.3",
+    "validator": ">=13.11.0",
+    "winston": ">=3.13.0",
+    "winston-daily-rotate-file": ">=5.0.0"
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "redis-mock": "^0.56.3",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5"
+  }
+}

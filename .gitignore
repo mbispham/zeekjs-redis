@@ -1,0 +1,7 @@
+.idea
+*.log
+node_modules
+/dump.rdb
+scripts/.DS_Store
+.DS_Store
+js.Dockerfile
