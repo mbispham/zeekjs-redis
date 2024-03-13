@@ -7,9 +7,8 @@ const redisClient = require('./redisClient');
 async function main() {
     try {
         await redisClient.connect();
-        // Rest of your application logic
     } catch (err) {
-        // Handle initialization error
+        // TODO: Handle initialization error
     }
 
     // Setup shutdown hooks

@@ -1,4 +1,4 @@
-//ZeekRedis.js
+//ZeekRedis.js - TODO - can be made more modular
 'use strict';
 const logger = require('./logger.js');
 const fs = require('fs').promises;
