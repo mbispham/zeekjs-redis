@@ -1,4 +1,4 @@
-// redisClient.js
+// redisClient.js - wrapper around redis
 require('dotenv').config();
 const logger = require('./logger.js');
 const redis = require('redis');
