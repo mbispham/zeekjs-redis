@@ -1,4 +1,4 @@
-ZeekJS-2-Redis
+ZeekJS-Redis
 =================================
 
 ***work in progress*** ...
