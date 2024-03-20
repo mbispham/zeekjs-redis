@@ -8,7 +8,14 @@ async function main() {
     try {
         await redisClient.connect();
     } catch (err) {
-        // TODO: Handle initialization error
+        logger.error('Initialization error:', err);
+        if (err.message.includes("Socket already opened")) {
+            // Handle the specific case where the socket is already opened
+            logger.info('Continuing with the existing Redis connection.');
+        } else {
+            // If the error is not about an already open connection, exit the process
+            process.exit(1);
+        }
     }
 
     // Setup shutdown hooks

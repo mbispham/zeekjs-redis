@@ -47,13 +47,15 @@ redisClient.connect()
 // Graceful Shutdown
 function shutDown() {
     logger.info('Shutting down, ensuring all logs are processed');
-    // Ensure all ongoing log processing to complete
-
-    logger.info('Closing Redis connection');
-    redisClient.quit().then(() => {
-        logger.info('Redis client closed');
-        process.exit(0);
-    });
+    redisClient.shutDown()
+        .then(() => {
+            logger.info('Redis client closed');
+            process.exit(0);
+        })
+        .catch(err => {
+            logger.error('Error during Redis client shutdown:', err);
+            process.exit(1); // Exit with an error code or handle the error as needed
+        });
 }
 
 process.on('SIGTERM', shutDown);
