@@ -28,8 +28,8 @@ else
         zeek-config --zeekpath
     elif [ "$1" = "zeek_plugin_path" ]; then
         # Combine the local tree and the system-wide path. This allows
-        # us to test on a local build or an installation made via zkg,
-        # which squirrels away the build.
+        # us to test on a local build-intention-scripts or an installation made via zkg,
+        # which squirrels away the build-intention-scripts.
         echo "$(cd "${base}/../.." && pwd)/build:$(zeek-config --plugin_dir)"
     elif [ "$1" = "path" ]; then
         echo "${PATH}"

@@ -2,7 +2,7 @@
 # Put required additional cmake functionality into plugin.cmake.
 cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
 
-project(ZeekPluginisight)
+project(ZeekPluginZeekjsRedis)
 
 # Establish version numbers in config.h
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" VERSION LIMIT_COUNT 1)
@@ -27,7 +27,7 @@ include_directories("${BRO_PLUGIN_BASE}/src")
 
 include(ZeekPlugin)
 
-zeek_plugin_begin(zeekjsredis matti)
+zeek_plugin_begin(ZeekJS Redis)
 
 file(GLOB cc_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "plugin/src/*.cc")
 foreach(file ${cc_files})
