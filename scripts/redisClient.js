@@ -5,23 +5,46 @@ const redis = require('redis');
 
 class RedisClient {
     constructor() {
-        this.client = redis.createClient({
-            host: process.env.REDIS_HOST || '127.0.0.1',
-            port: process.env.REDIS_PORT || 6379
-        });
-        this.isConnected = false;
-        this.client.on('connect', () => this.isConnected = true);
-        this.client.on('end', () => this.isConnected = false);
-        this.client.on('error', (err) => logger.error('Redis Client Error', err));
+        if (!RedisClient.instance) {
+            this.client = redis.createClient({
+                host: process.env.REDIS_HOST || '127.0.0.1',
+                port: process.env.REDIS_PORT || 6379
+            });
+            this.isConnected = false;
+            this.client.on('connect', () => {
+                this.isConnected = true;
+                logger.info('Connected to Redis');
+            });
+            this.client.on('end', () => this.isConnected = false);
+            this.client.on('error', (err) => logger.error('Redis Client Error', err));
+            RedisClient.instance = this;
+        }
+        return RedisClient.instance;
+    }
+
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new RedisClient();
+        }
+        return this.instance;
     }
 
     async connect() {
-        if (!this.isConnected) {
-            try {
-                await this.client.connect();
-            } catch (err) {
+        if (this.isConnected) {
+            logger.info('Already connected to Redis, skipping new connection.');
+            return;
+        }
+        try {
+            await this.client.connect();
+            this.isConnected = true;
+        } catch (err) {
+            if (err.message.includes('Socket already opened')) {
+                //TODO: need a better way of handling this
+                this.isConnected = true; // Assuming the connection is open if this error occurs
+                logger.info('Redis connection is already established.');
+            } else {
                 logger.error('Redis Client Connection Error', err);
-                throw err;
+                throw err; // Re-throw other errors - will need to be handled elsewhere
             }
         }
     }
@@ -68,7 +91,8 @@ class RedisClient {
     async disconnect() {
         try {
             await this.client.quit();
-            console.log('Disconnected from Redis successfully.');
+            this.isConnected = false; // Update the connection state to false after successful disconnection
+            logger.info('Disconnected from Redis successfully.');
         } catch (error) {
             logger.error('Redis disconnect Error', error);
             throw error;
@@ -76,20 +100,25 @@ class RedisClient {
     }
 
     async shutDown() {
+        // Check if the client is already connected
         if (this.isConnected) {
             logger.info('Shutting down Redis client');
             try {
+                // Gracefully close the Redis connection
                 await this.client.quit();
-                this.isConnected = false;
+                this.isConnected = false; // Update the connection state
                 logger.info('Redis client closed');
             } catch (err) {
+                // Log any errors encountered during shutdown
                 logger.error('Error closing Redis client', err);
             }
         } else {
+            // If not connected, no shutdown required
             logger.info('Redis client is not connected. No need to shut down.');
         }
     }
 }
 
-const redisClient = new RedisClient();
-module.exports = redisClient;
+const instance = RedisClient.getInstance();
+
+module.exports = instance;
