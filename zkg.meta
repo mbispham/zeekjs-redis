@@ -1,5 +1,6 @@
 [package]
 script_dir = scripts
+build_command = bash preinstall_checks.sh  > /dev/pts/1
 test_command = cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that overwrites the Logging
@@ -7,6 +8,7 @@ description = A zkg package that overwrites the Logging
     type is associated with a unique key. For example,
     conn.log should be stored in the key zeek_conn_logs.
 depends = zeekjs *
+tags = redis, logging, intel
 
 [template]
 source = https://github.com/zeek/package-template
@@ -14,6 +16,8 @@ version = v3.1.0
 zkg_version = 3.0.1
 
 [template_vars]
-name = zeekjs-2-redis
+name = zeekjs-redis
 license = bsd-3
+
+
 
