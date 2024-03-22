@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Display banner
-cat /img/banner.txt
+cat img/banner.txt
 
 echo
 echo "Checking dependencies..."
