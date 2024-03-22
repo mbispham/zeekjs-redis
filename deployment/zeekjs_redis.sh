@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sequentially execute the other bash scripts
+# Sequentially execute bash scripts
 
 # Exit if a command exits with a non-zero status.
 set -e
@@ -13,14 +13,15 @@ echo
 
 # Call dependencies.sh
 echo
-echo "Running dependencies.sh..."
+echo "Checking for dependencies..."
 cd deployment
 chmod u+x dependencies.sh
 ./dependencies.sh
-echo "dependencies.sh completed successfully."
+echo "Dependency check completed successfully."
 
 # Call generate_redis_cert.sh
-echo "Running generate_redis_cert.sh..."
+echo
+echo "Checking Redis SSL Certificate..."
 CERT_FILE="/etc/redis/ssl/redis.crt"
 KEY_FILE="/etc/redis/ssl/redis.key"
 
@@ -55,18 +56,18 @@ else
         esac
     done
 fi
-echo "generate_redis_cert.sh completed successfully."
+echo "Redis SSL Cert check completed successfully."
 
 # Call generate_pw.sh
 echo
-echo "Running generate_pw.sh..."
+echo "Check redis password..."
 chmod u+x generate_pw.sh
 ./generate_pw.sh
-echo "generate_pw.sh completed successfully."
+echo "Redis password completed successfully."
 
 # Call redis_start.sh
 echo
-echo "Running redis_start.sh..."
+echo "Start redis server..."
 chmod u+x redis_start.sh
 ./redis_start.sh
-echo "redis_start.sh completed successfully."
+echo "Redis server started successfully."
