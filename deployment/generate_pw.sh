@@ -16,7 +16,8 @@ then
   # Check if the .env file exists
   if [ -f "$ENV_FILE" ]; then
       # replace empty REDIS_PASSWORD entry with the generated password
-      sed -i "s/^REDIS_PASSWORD='.*'/REDIS_PASSWORD='$PASSWORD'/" $ENV_FILE
+      escaped_password=$(echo "$PASSWORD" | sed -e 's/[\/&]/\\&/g')
+      sed -i "s|^REDIS_PASSWORD='.*'|REDIS_PASSWORD='$escaped_password'|" $ENV_FILE
       echo "Password generated and updated in $ENV_FILE"
   else
       echo "Error: .env file does not exist at the specified location."
