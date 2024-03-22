@@ -1,12 +1,8 @@
 #!/bin/bash
 
 # Installing npm dependencies and redis-cli
-
-# Display banner
-cat img/banner.txt
-
-echo
 echo "Checking dependencies..."
+echo
 
 # Function to ask for user confirmation
 ask_to_install_packages() {
