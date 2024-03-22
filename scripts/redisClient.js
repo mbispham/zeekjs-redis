@@ -37,9 +37,13 @@ class RedisClient {
         try {
             await this.client.connect();
             this.isConnected = true;
+            this.client.on('error', (err) => {
+                logger.error('Redis error', err);
+                this.isConnected = false;
+            });
         } catch (err) {
             if (err.message.includes('Socket already opened')) {
-                //TODO: need a better way of handling this
+                //TODO: need a better way of handling this - NB: should now be caught in index.js - needs testing
                 this.isConnected = true; // Assuming the connection is open if this error occurs
                 logger.info('Redis connection is already established.');
             } else {
@@ -71,21 +75,29 @@ class RedisClient {
         }
     }
 
-    // Async scan method
-    async scan(cursor, matchPattern = "*", count = 10) {
-        try {
-            const args = [cursor];
-            if (matchPattern) {
-                args.push('MATCH', matchPattern);
+    // Async scan method - TODO - add expiry time to logs
+    /**
+     * Asynchronously scans the keyspace
+     * @param {string} matchPattern The pattern to match keys against
+     * @param {number} count The approximate number of keys to return in each call
+     * @returns {Promise<Array>} A promise that resolves to an array of keys
+     */
+    async scan(matchPattern = "*", count = 100) {
+        let cursor = '0';
+        let keys = [];
+
+        do {
+            try {
+                const scanResult = await this.client.scan(cursor, 'MATCH', matchPattern, 'COUNT', count);
+                cursor = scanResult[0];
+                keys.push(...scanResult[1]);
+            } catch (error) {
+                logger.error('Redis scan Error', error);
+                throw error; // Propagate the error to be handled by the caller
             }
-            if (count && !isNaN(count)) {
-                args.push('COUNT', count);
-            }
-            return await this.client.scan(...args);
-        } catch (error) {
-            logger.error('Redis scan Error', error);
-            throw error;
-        }
+        } while (cursor !== '0');
+
+        return keys;
     }
 
     async disconnect() {
