@@ -12,7 +12,10 @@ echo
 echo
 
 # Call dependencies.sh
+echo
 echo "Running dependencies.sh..."
+cd deployment
+chmod u+x dependencies.sh
 ./dependencies.sh
 echo "dependencies.sh completed successfully."
 
@@ -32,7 +35,7 @@ else
         read -p "Do you want to generate a local TLS certificate for Redis? (y/n): " generate_cert_choice
         case "${generate_cert_choice,,}" in  # Convert to lowercase
             y )
-                chmod +x generate_redis_cert.sh
+                chmod +x deployment/generate_redis_cert.sh
                 if [[ -x "generate_redis_cert.sh" ]]; then
                     ./generate_redis_cert.sh
                     if [ $? -eq 0 ]; then
@@ -55,11 +58,15 @@ fi
 echo "generate_redis_cert.sh completed successfully."
 
 # Call generate_pw.sh
+echo
 echo "Running generate_pw.sh..."
+chmod u+x generate_pw.sh
 ./generate_pw.sh
 echo "generate_pw.sh completed successfully."
 
 # Call redis_start.sh
+echo
 echo "Running redis_start.sh..."
+chmod u+x redis_start.sh
 ./redis_start.sh
 echo "redis_start.sh completed successfully."

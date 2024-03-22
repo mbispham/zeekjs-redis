@@ -17,8 +17,8 @@ ask_to_install_packages() {
 }
 
 # Load environment variables from .env file
-if [ -f ".env" ]; then
-    export $(cat .env | sed 's/#.*//g' | xargs)
+if [ -f "../scripts/.env" ]; then
+    export $(cat "../scripts/.env" | sed 's/#.*//g' | xargs)
 else
     echo ".env file not found."
     exit 1
@@ -45,7 +45,7 @@ npm_version=$(npm -v)
 echo "npm is installed - v$npm_version"
 
 # Check for package.json file
-if [ ! -f "package.json" ]; then
+if [ ! -f "../package.json" ]; then
     echo "package.json not found."
     exit 1
 fi
@@ -108,6 +108,3 @@ if ! command -v redis-cli &> /dev/null; then
 fi
 
 echo "redis-cli is installed."
-echo
-echo "Dependencies installed."
-echo

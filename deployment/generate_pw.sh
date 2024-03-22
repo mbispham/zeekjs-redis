@@ -1,7 +1,7 @@
 #!/bin/bash
 
 read -p "Do you want to generate a new or replace an existing Redis password? (y/n) " -n 1 -r
-echo
+echo-m ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
