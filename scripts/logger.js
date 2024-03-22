@@ -1,9 +1,18 @@
-// logger.js
+//logger.js
 const winston = require('winston');
+require('winston-daily-rotate-file');
+
+const fileTransport = new winston.transports.DailyRotateFile({
+    filename: 'zeekjs-redis-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    maxSize: '20m',
+    maxFiles: '14d',
+    level: 'info'
+});
 
 // Configure the Winston logger.
 const logger = winston.createLogger({
-    level: 'info',  // Set the default logging level
+    level: process.env.LOG_LEVEL || 'info',  // Set the default logging level
     format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         winston.format.errors({ stack: true }),
@@ -11,24 +20,30 @@ const logger = winston.createLogger({
         winston.format.json()
     ),
     transports: [
-        // Console transport
+        fileTransport,
         new winston.transports.Console({
             format: winston.format.combine(
                 winston.format.colorize(),
                 winston.format.simple()
             )
-        }),
-        // File transports
-        new winston.transports.File({ filename: 'error.log', level: 'error' }),
-        new winston.transports.File({ filename: 'zeekjs-redis.log' })
+        })
     ]
 });
 
-// When not in production log to the console as well
+// When not in production also log to the console.
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
-        format: winston.format.simple()
+        format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.simple()
+        )
     }));
 }
 
+
+function setLogLevel(level) {
+    logger.level = level;
+}
+
 module.exports = logger;
+module.exports.setLogLevel = setLogLevel;
