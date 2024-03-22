@@ -114,3 +114,4 @@ fi
 echo "redis-cli is installed."
 echo
 echo "Dependencies installed."
+echo
