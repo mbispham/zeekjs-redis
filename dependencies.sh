@@ -144,7 +144,7 @@ fi
 if [ $? -ne 0 ]; then
     echo "Failed to connect to Redis server at $REDIS_HOST:$REDIS_PORT."
     echo
-    echo Attempting to start Redis server..."
+    echo "Attempting to start Redis server..."
     start_redis_server
 
     # Try to reconnect
