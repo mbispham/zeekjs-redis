@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Installing npm dependencies and redis-cli
+
 # Display banner
 cat img/banner.txt
 
@@ -110,55 +112,5 @@ if ! command -v redis-cli &> /dev/null; then
 fi
 
 echo "redis-cli is installed."
-
-# Extract Redis connection info from environment variables
-REDIS_HOST=${REDIS_HOST:-localhost}
-REDIS_PORT=${REDIS_PORT:-6379}
-REDIS_PASSWORD=${REDIS_PASSWORD:-''}
-
-# Attempt to connect to Redis server
-if [ -z "$REDIS_PASSWORD" ]; then
-    redis-cli -h $REDIS_HOST -p $REDIS_PORT ping > /dev/null
-else
-    redis-cli -h $REDIS_HOST -p $REDIS_PORT -a $REDIS_PASSWORD ping > /dev/null
-fi
-
-if [ $? -ne 0 ]; then
-    echo "Failed to connect to Redis server at $REDIS_HOST:$REDIS_PORT."
-fi
-
-start_redis_server() {
-    # Depending on how Redis is set up, you might need to modify this command
-    redis-server --daemonize yes --bind $REDIS_HOST --port $REDIS_PORT --requirepass "$REDIS_PASSWORD"
-    sleep 2 # Wait a bit to ensure Redis server starts
-}
-
-# Attempt to connect to Redis server
-if [ -z "$REDIS_PASSWORD" ]; then
-    redis-cli -h $REDIS_HOST -p $REDIS_PORT ping > /dev/null
-else
-    redis-cli -h $REDIS_HOST -p $REDIS_PORT -a $REDIS_PASSWORD ping > /dev/null
-fi
-
-# Check connection status
-if [ $? -ne 0 ]; then
-    echo "Failed to connect to Redis server at $REDIS_HOST:$REDIS_PORT."
-    echo
-    echo "Attempting to start Redis server..."
-    start_redis_server
-
-    # Try to reconnect
-    if [ -z "$REDIS_PASSWORD" ]; then
-        redis-cli -h $REDIS_HOST -p $REDIS_PORT ping > /dev/null
-    else
-        redis-cli -h $REDIS_HOST -p $REDIS_PORT -a $REDIS_PASSWORD ping > /dev/null
-    fi
-
-    if [ $? -ne 0 ]; then
-        echo "Failed to connect to Redis server after attempting to start it."
-        exit 1
-    fi
-fi
-
-echo "Connected to Redis server successfully."
-echo "All checks passed. Environment is ready."
+echo
+echo "Dependencies installed."
