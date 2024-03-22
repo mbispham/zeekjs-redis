@@ -26,7 +26,7 @@ while netstat -ltn | awk '$4 ~ /:'"$port"'$/ {exit 1}'; do
 done
 
 # Write available port to the .env file, updating if necessary
-env_file="../scripts.env"
+env_file="../scripts/.env"
 
 if grep -q "SOCKET_PORT=" "$env_file"; then
     # SOCKET_PORT exists, so replace its value
