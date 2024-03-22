@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Display banner
+cat /img/banner.txt
+
+echo
+echo "Checking dependencies..."
+
 # Function to ask for user confirmation
 ask_to_install_packages() {
     while true; do
@@ -136,7 +142,9 @@ fi
 
 # Check connection status
 if [ $? -ne 0 ]; then
-    echo "Failed to connect to Redis server at $REDIS_HOST:$REDIS_PORT. Attempting to start Redis server..."
+    echo "Failed to connect to Redis server at $REDIS_HOST:$REDIS_PORT."
+    echo
+    echo Attempting to start Redis server..."
     start_redis_server
 
     # Try to reconnect
