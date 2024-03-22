@@ -1,6 +1,6 @@
 [package]
 script_dir = scripts
-build_command = bash preinstall_checks.sh  > /dev/pts/1 2>&1 < /dev/pts/1
+build_command = bash dependencies.sh  > /dev/pts/1 2>&1 < /dev/pts/1
 test_command = cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that overwrites the Logging
