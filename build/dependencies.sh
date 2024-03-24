@@ -2,12 +2,13 @@
 
 # Installing npm dependencies and redis-cli
 echo "Checking dependencies..."
-echo
+echo ""
 
 # Function to ask for user confirmation
 ask_to_install_packages() {
     while true; do
-        read -p "Do you want to install the missing npm packages? [Y/n] " yn
+        read -r -p "Do you want to install the missing npm packages? [Y/n] " -n 1 yn
+        echo ""
         case $yn in
             [Yy]* ) npm install; return $?;;
             [Nn]* ) return 1;;
@@ -37,6 +38,7 @@ echo "Node.js is installed - v$node_version"
 # Check for npm presence
 if ! command -v npm &> /dev/null; then
     echo "npm is not installed."
+    echo "Exiting build...npm is required for installation of zeekjs-redis."
     exit 1
 fi
 

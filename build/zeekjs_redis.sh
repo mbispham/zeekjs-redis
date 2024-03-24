@@ -13,7 +13,6 @@ echo
 
 # Call dependencies.sh
 echo
-echo "Checking for dependencies..."
 cd deployment
 chmod u+x dependencies.sh
 ./dependencies.sh
@@ -67,7 +66,6 @@ echo "Redis password completed successfully."
 
 # Call redis_start.sh
 echo
-echo "Start redis server..."
 chmod u+x redis_start.sh
 ./redis_start.sh
-echo "Redis server started successfully."
+echo "Redis server running successfully."
