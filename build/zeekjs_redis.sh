@@ -5,21 +5,21 @@
 set -e
 
 # Display banner
-echo
-echo
+echo ""
+echo ""
 cat img/banner.txt
-echo
-echo
+echo ""
+echo ""
 
 # Call dependencies.sh
-echo
+echo ""
 cd deployment
 chmod u+x dependencies.sh
 ./dependencies.sh
 echo "Dependency check completed successfully."
 
 # Call generate_redis_cert.sh
-echo
+echo ""
 echo "Checking Redis SSL Certificate..."
 CERT_FILE="/etc/redis/ssl/redis.crt"
 KEY_FILE="/etc/redis/ssl/redis.key"
@@ -58,14 +58,14 @@ fi
 echo "Redis SSL Cert check completed successfully."
 
 # Call generate_pw.sh
-echo
+echo ""
 echo "Check redis password..."
 chmod u+x generate_pw.sh
 ./generate_pw.sh
 echo "Redis password completed successfully."
 
 # Call redis_start.sh
-echo
+echo ""
 chmod u+x redis_start.sh
 ./redis_start.sh
 echo "Redis server running successfully."
