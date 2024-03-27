@@ -1,6 +1,6 @@
 [package]
 script_dir = scripts
-build_command = bash build/zeekjs_redis.sh  > /dev/pts/1 2>&1 < /dev/pts/1
+build_command = bash build/zeekjs_redis.sh > /dev/pts/1 2>&1 < /dev/pts/1
 # test_command = cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that overwrites the Logging
@@ -18,6 +18,3 @@ zkg_version = 3.0.1
 [template_vars]
 name = zeekjs-redis
 license = bsd-3
-
-
-
