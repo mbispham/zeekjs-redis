@@ -41,3 +41,7 @@ Currently, no validation or sanitization for Zeek derived data that enters Redis
 - [**Christian Kreibich**](https://github.com/ckreibich): Zeek project technical lead
 - [**Arne Welzel**](https://github.com/awelzel): Main author of [ZeekJS](https://zeekjs.readthedocs.io)
 - [**Simeon Miteff**](https://github.com/simeonmiteff): The structure of this project was inspired by Simeon's work on integrating telegram with Zeek [zeekjs-notice-telegram](https://github.com/corelight/zeekjs-notice-telegram)
+- [**WRCCDC**](https://wrccdc.org): test.pcap is carved from a publicly available trace released under a [creative commons license](https://creativecommons.org/licenses/by-sa/4.0/)
+
+### License 
+zeekjs-redis is free and open-source software licensed under the [3-clause BSD license](LICENSE).
