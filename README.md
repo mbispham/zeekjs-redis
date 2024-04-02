@@ -5,7 +5,7 @@ ZeekJS-Redis
 
 This zkg package implements a method of parsing Zeek logs to Redis.
 
-`# zeek -r testing/Traces/test.pcap ./index.js`
+`# zeek -r testing/Traces/test.pcap ./scripts/index.js`
 
 ```
 # redis-cli
