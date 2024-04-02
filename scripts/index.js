@@ -2,17 +2,38 @@
 const net = require('net');
 const redis = require('redis'); //
 const logger = require('./logger.js');
-
 const redisClient = require('./redisClient');
-
 const { createServer } = require('./socketServer');
 
-createServer();
+const server = createServer();
+
+// function findAvailablePort(startingPort) {
+//     return new Promise((resolve, reject) => {
+//         const port = startingPort;
+//         const server = net.createServer();
+//
+//         server.listen(port, () => {
+//             server.once('close', () => {
+//                 resolve(port);
+//             });
+//             server.close();
+//         });
+//
+//         server.on('error', (err) => {
+//             if (err.code === 'EADDRINUSE') {
+//                 // Port is in use, try the next one
+//                 resolve(findAvailablePort(port + 1));
+//             } else {
+//                 reject(err);
+//             }
+//         });
+//     });
+// }
 
 async function main() {
     try {
         await redisClient.connect();
-        const port = await findAvailablePort(3000);
+        const port = 3000;
         logger.info('Starting server on port: ' + port);
         server.listen(port, () => {
             logger.info(`Socket server listening on port ${port}`);
@@ -27,6 +48,13 @@ async function main() {
             process.exit(1);
         }
     }
+}
+
+function shutDown() {
+    logger.info('Shutting down gracefully');
+    // Perform any necessary cleanup
+    redisClient.quit();
+    process.exit(0);
 }
 
 process.on('SIGTERM', shutDown);

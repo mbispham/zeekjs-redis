@@ -47,6 +47,7 @@ function createServer() {
     server.on('error', (err) => {
         logger.error('Server error:', err);
     });
+    return server;
 }
 
 module.exports = { createServer };

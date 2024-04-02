@@ -59,6 +59,7 @@ RUN apt-get install -y --no-install-recommends \
       locales-all \
       make \
       nano \
+      net-tools \
       ninja-build \
       patch \
       python3 \
@@ -69,6 +70,7 @@ RUN apt-get install -y --no-install-recommends \
       python3-setuptools \
       python3-websocket \
       python3-wheel \
+      redis-server \
       swig \
       wget \
       zlib1g-dev \
@@ -107,7 +109,7 @@ RUN wget --no-verbose https://download.zeek.org/zeek-${ZEEK_VERSION}.tar.gz -O z
 #    && rm -rf /tmp/zeek
 
 # ENV for node, npm and zeek
-ENV PATH=/opt/zeek/bin:$PATH
+ENV PATH=/opt/node/bin:/opt/zeek/bin:$PATH
 
 # Checks
 RUN btest --version
@@ -127,12 +129,10 @@ RUN git clone https://github.com/corelight/zeekjs && \
 
 RUN zeek -N Zeek::JavaScript
 
-# Comment out the builtin ZeekJS
-#RUN sed -i '/@load Zeek_JavaScript\/__load__.zeek/s/^/#/' /opt/zeek/share/zeek/builtin-plugins/__load__.zeek
-
 # Compile, test and install plugin
-WORKDIR /home/zeekjs-redis
-COPY . .
-RUN zkg install . --force
+WORKDIR /home/
+RUN git clone https://github.com/mbispham/zeekjs-redis && \
+    cd zeekjs-redis && \
+    bash bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
 
-#RUN zeek -r test.pcap ./index.js
+RUN zeek -r testing/Traces/test.pcap ./scripts/index.js

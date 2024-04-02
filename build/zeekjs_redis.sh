@@ -13,7 +13,7 @@ echo ""
 
 # Call dependencies.sh
 echo ""
-cd deployment
+cd build
 chmod u+x dependencies.sh
 ./dependencies.sh
 echo "Dependency check completed successfully."
@@ -35,7 +35,7 @@ else
         read -p "Do you want to generate a local TLS certificate for Redis? (y/n): " generate_cert_choice
         case "${generate_cert_choice,,}" in  # Convert to lowercase
             y )
-                chmod +x deployment/generate_redis_cert.sh
+                chmod u+x generate_redis_cert.sh
                 if [[ -x "generate_redis_cert.sh" ]]; then
                     ./generate_redis_cert.sh
                     if [ $? -eq 0 ]; then

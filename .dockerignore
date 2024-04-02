@@ -2,4 +2,3 @@
 *.log
 node_modules
 /dump.rdb
-.git
