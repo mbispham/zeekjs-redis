@@ -1,8 +1,11 @@
-//ZeekRedis.js - TODO - can be made more modular
+//ZeekRedis.js
 'use strict';
 const logger = require('./logger.js');
 const fs = require('fs').promises;
 const redisClient = require('./redisClient.js');
+const stringify = require('safe-stable-stringify').configure({
+    deterministic: false,
+});
 
 // Overriding BigInt serialization for JSON
 BigInt.prototype.toJSON = function() {
@@ -10,7 +13,7 @@ BigInt.prototype.toJSON = function() {
 }
 
 // Async function to process and send logs to Redis
-async function processAndSendLog(rec, log_id) {
+async function processAndSendLog(logData, log_id) {
     if (log_id.includes('::')) {
         [log_id] = log_id.split('::');
     }
@@ -19,12 +22,13 @@ async function processAndSendLog(rec, log_id) {
     // Check id of the log e.g.: conn, http, ssl etc
     const logFile = `${log_id}.log`;
     const redisKey = `zeek_${log_id}_logs`;
-    const log_rec = zeek.select_fields(rec, zeek.ATTR_LOG);
-    const flat_rec = zeek.flatten(log_rec);
+    const log_rec = zeek.select_fields(logData, zeek.ATTR_LOG);
+    //const flat_rec = zeek.flatten(log_rec);
+    const serializedData = stringify(log_rec);
 
     try {
-        await fs.appendFile(logFile, JSON.stringify(flat_rec) + '\n');
-        await redisClient.rpush(redisKey, JSON.stringify(flat_rec));
+        await fs.appendFile(logFile, serializedData + '\n');
+        await redisClient.rpush(redisKey, serializedData);
     } catch (err) {
         logger.error('Error writing to file or Redis:', err);
     }
@@ -35,8 +39,8 @@ redisClient.connect()
     .then(() => {
         logger.info('Connected to Redis');
         // Integration with Zeek
-        zeek.hook('Log::log_stream_policy', {priority: -1000}, (rec, log_id) => {
-            processAndSendLog(rec, log_id).catch(err => logger.error(err));
+        zeek.hook('Log::log_stream_policy', {priority: -1000}, (logData, log_id) => {
+            processAndSendLog(logData, log_id).catch(err => logger.error(err));
         });
     })
     .catch(err => {
@@ -54,7 +58,7 @@ function shutDown() {
         })
         .catch(err => {
             logger.error('Error during Redis client shutdown:', err);
-            process.exit(1); // Exit with an error code or handle the error as needed
+            process.exit(1);
         });
 }
 
