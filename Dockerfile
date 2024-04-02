@@ -8,10 +8,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV CCACHE_DIR "/var/spool/ccache"
 ENV CCACHE_COMPRESS 1
 
-# Set up the for node, npm, rust and zeek
-ENV OPT_PATH "/opt"
-ENV PATH="$OPT_PATH/node/bin:$OPT_PATH/zeek/bin:/root/.cargo/bin:$PATH"
-
 # Define ARGS
 ARG ZEEK_VERSION="6.0.3"
 ARG NODE_VERSION="20.11.1"
@@ -62,6 +58,7 @@ RUN apt-get install -y --no-install-recommends \
       libz1 \
       locales-all \
       make \
+      nano \
       ninja-build \
       patch \
       python3 \
@@ -90,31 +87,52 @@ RUN git clone https://github.com/nodejs/node.git && cd node \
     && git reset --hard v${NODE_VERSION} \
     && ./configure --prefix=/opt/node --shared --shared-openssl --shared-zlib \
     && make \
-    && make install \
-    && rm -rf /tmp/node
+    && make install
+#    && rm -rf /tmp/node
 
 # Install zeek
 WORKDIR /tmp/zeek
-RUN wget --no-verbose https://download.zeek.org/zeek-${ZEEK_VERSION}.tar.gz -O /tmp/zeek.tar.gz && \
-    tar -xzf /tmp/zeek.tar.gz -C /tmp && cd /tmp/zeek-${ZEEK_VERSION} && \
+RUN wget --no-verbose https://download.zeek.org/zeek-${ZEEK_VERSION}.tar.gz -O zeek.tar.gz && \
+    tar -xzf zeek.tar.gz && \
+    cd zeek-${ZEEK_VERSION} && \
     ./configure --prefix=/opt/zeek/ \
     --enable-perftools \
     --disable-broker-tests \
 	--build-type=Release \
 	--disable-btest-pcaps \
-	--disable-cpp-tests && \
+	--disable-cpp-tests \
+    --disable-javascript && \
      make && \
      make install
+#    && rm -rf /tmp/zeek
+
+# ENV for node, npm and zeek
+ENV PATH=/opt/zeek/bin:$PATH
 
 # Checks
 RUN btest --version
 RUN zeek --version
 RUN node --version
 RUN npm --version
+
+WORKDIR /home/
+RUN git clone https://github.com/corelight/zeekjs && \
+    cd zeekjs && \
+    sed -i 's|build_command = ./configure --with-nodejs=%(nodejs_root_dir)s|build_command = ./configure --with-nodejs=/opt/node|' /home/zeekjs/zkg.meta && \
+    git config user.name "your name" && \
+    git config user.email "you@example.com" && \
+    git add . && \
+    git commit -m "Update node path" && \
+    zkg install . --force
+
 RUN zeek -N Zeek::JavaScript
 
+# Comment out the builtin ZeekJS
+#RUN sed -i '/@load Zeek_JavaScript\/__load__.zeek/s/^/#/' /opt/zeek/share/zeek/builtin-plugins/__load__.zeek
+
 # Compile, test and install plugin
-WORKDIR /src/
+WORKDIR /home/zeekjs-redis
 COPY . .
-RUN zkg install zeekjs-redis
-RUN zeek -r test.pcap ./index.js
+RUN zkg install . --force
+
+#RUN zeek -r test.pcap ./index.js
