@@ -133,6 +133,6 @@ RUN zeek -N Zeek::JavaScript
 WORKDIR /home/
 RUN git clone https://github.com/mbispham/zeekjs-redis && \
     cd zeekjs-redis && \
-    bash bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
+    bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
 
 RUN zeek -r testing/Traces/zeekjs-redis-test.pcap ./scripts/index.js
