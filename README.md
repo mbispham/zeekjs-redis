@@ -14,7 +14,7 @@ This zkg package implements a method of parsing Zeek logs to Redis.
 127.0.0.1:6379> LRANGE zeek_conn_logs 0 -1
 1)  "{\"ts\":1616775350.763199,\"uid\":\"CNT4R81EW9Y2E6nXLl\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.1\",\"resp_p\":31981},\"proto\":\"tcp\",\"conn_state\":\"S0\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"S\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":0,\"resp_ip_bytes\":0}"
 ...
-24) "{\"ts\":1616775350.76328,\"uid\":\"CLzg942i0n0wtQxzP2\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.7\",\"resp_p\":45298},\"proto\":\"tcp\",\"duration\":0.00012302398681640625,\"orig_bytes\":0,\"resp_bytes\":0,\"conn_state\":\"REJ\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"Sr\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":1,\"resp_ip_bytes\":40}"
+24) "{\"ts\":...
 ```
 
 - **index.js**: Utilizes Node.js's net module to send Zeek logs to a Redis server
