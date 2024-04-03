@@ -7,37 +7,11 @@ const { createServer } = require('./socketServer');
 
 const server = createServer();
 
-// function findAvailablePort(startingPort) {
-//     return new Promise((resolve, reject) => {
-//         const port = startingPort;
-//         const server = net.createServer();
-//
-//         server.listen(port, () => {
-//             server.once('close', () => {
-//                 resolve(port);
-//             });
-//             server.close();
-//         });
-//
-//         server.on('error', (err) => {
-//             if (err.code === 'EADDRINUSE') {
-//                 // Port is in use, try the next one
-//                 resolve(findAvailablePort(port + 1));
-//             } else {
-//                 reject(err);
-//             }
-//         });
-//     });
-// }
-
 async function main() {
     try {
         await redisClient.connect();
         const port = 3000;
         logger.info('Starting server on port: ' + port);
-        server.listen(port, () => {
-            logger.info(`Socket server listening on port ${port}`);
-        });
     } catch (err) {
         logger.error('Initialization error:', err);
         if (err.message.includes("Socket already opened")) {
