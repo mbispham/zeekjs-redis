@@ -30,14 +30,20 @@ const logger = winston.createLogger({
     ]
 });
 
-// When not in production also log to the console.
+// When not in production, log to the console.
 if (process.env.NODE_ENV !== 'production') {
-    logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple()
-        )
-    }));
+    logger.transports = [
+        fileTransport,
+        new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.simple()
+            )
+        })
+    ];
+} else {
+    // In production, just use the file transport.
+    logger.transports = [fileTransport];
 }
 
 
