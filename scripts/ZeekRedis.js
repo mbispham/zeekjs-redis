@@ -13,6 +13,7 @@ BigInt.prototype.toJSON = function() {
 }
 
 // Async function to process and send logs to Redis
+// zeekjs docs shout out - https://zeekjs.readthedocs.io/en/latest/index.html#taking-over-logging
 async function processAndSendLog(logData, log_id) {
     if (log_id.includes('::')) {
         [log_id] = log_id.split('::');

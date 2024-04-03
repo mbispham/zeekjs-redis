@@ -12,7 +12,9 @@ This zkg package implements a method of parsing Zeek logs to Redis.
 127.0.0.1:6379> KEYS *
 1) "zeek_conn_logs"
 127.0.0.1:6379> LRANGE zeek_conn_logs 0 -1
-1)  1) "{\"ts\":1616775350.763199,\"uid\":\"CNT4R81EW9Y2E6nXLl\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.1\",\"resp_p\":31981},\"proto\":\"tcp\",\"conn_state\":\"S0\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"S\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":0,\"resp_ip_bytes\":0}"
+1)  "{\"ts\":1616775350.763199,\"uid\":\"CNT4R81EW9Y2E6nXLl\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.1\",\"resp_p\":31981},\"proto\":\"tcp\",\"conn_state\":\"S0\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"S\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":0,\"resp_ip_bytes\":0}"
+...
+24) "{\"ts\":1616775350.76328,\"uid\":\"CLzg942i0n0wtQxzP2\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.7\",\"resp_p\":45298},\"proto\":\"tcp\",\"duration\":0.00012302398681640625,\"orig_bytes\":0,\"resp_bytes\":0,\"conn_state\":\"REJ\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"Sr\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":1,\"resp_ip_bytes\":40}"
 ```
 
 - **index.js**: Utilizes Node.js's net module to send Zeek logs to a Redis server
@@ -22,28 +24,19 @@ This zkg package implements a method of parsing Zeek logs to Redis.
 
 ### Build
 
-```
-zkg install https://github.com/mbispham/zeekjs-redis.git
-```
-
-Or you can git clone and then:
+Git clone and then:
 ```
 bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
 ```
 
-### Dependencies
-
-- [Node.js](https://nodejs.org/)
-- [Redis](https://redis.io/)
-- [Winston](https://github.com/winstonjs/winston) - For logging.
-- [Dotenv](https://github.com/motdotla/dotenv) - For loading environment variables from `.env` file.
-- Zeek must be on `$PATH` - [Zeek Documentation](https://docs.zeek.org/en/current/install.html#configuring-the-run-time-environment)
-- Node and npm must be on `$PATH`
-
+In the build you get a prompt to:
+1. Create a redis password 
+2. A local certificate
+3. Install dependencies using npm
 
 ### Warning
 
-Currently, no validation or sanitization for Zeek derived data that enters Redis has been implemented.
+No validation or sanitization for Zeek derived data that enters Redis has been implemented.
 
 ### Acknowledgements
 
