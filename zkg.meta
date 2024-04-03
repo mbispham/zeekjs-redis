@@ -7,7 +7,7 @@ description = A zkg package that overwrites the Logging
     Framework to output Zeek logs to Redis. Each log id
     type is associated with a unique key. For example,
     conn.log should be stored in the key zeek_conn_logs.
-depends = zeekjs *
+# depends = zeekjs *
 tags = redis, logging, intel
 
 [template]
