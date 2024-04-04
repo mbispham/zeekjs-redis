@@ -24,7 +24,7 @@ This zkg package implements a method of parsing Zeek logs to Redis.
 
 ### Build
 
-Git clone and then:
+For now Git clone and then:
 ```
 bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
 ```
@@ -34,9 +34,27 @@ In the build you get a prompt to:
 2. A local certificate
 3. Install dependencies using npm
 
-### Warning
+TODO - Change so handled by Zeek plugin configuration  
 
-No validation or sanitization for Zeek derived data that enters Redis has been implemented.
+### Filtered Log Usage
+
+Rather than sending all Zeek logs to Redis a common could be to output a section of a specific log type.
+
+TODO - Add example of filtered log
+
+
+### Considerations for production environments
+
+Security - No validation or sanitization for Zeek derived data that enters Redis has been implemented.
+Ensure your redis server is not accessible from the internet - unless that is a desired feature.
+
+Persistence Configuration - No persistence is configured
+
+Replication - No data is replicated which may be a consideration for a production environment
+
+Hardware - Ensure you have enough RAM - redis is memory intensive - Zeek can churn out a lot of data
+
+Performance - single threaded
 
 ### Acknowledgements
 
