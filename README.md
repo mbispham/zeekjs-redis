@@ -38,12 +38,13 @@ TODO - Change so handled by Zeek plugin configuration
 
 ### Filtered Log Usage
 
-Rather than sending all Zeek logs to Redis a common could be to output a section of a specific log type.
+Rather than sending all Zeek logs to Redis a common use case could be to output a section of a specific log type.
+Lets show how to implement that...
 
-TODO - Add example of filtered log
+...TODO - Add example of filtered log
 
 
-### Considerations for production environments
+### Considerations for Production
 
 Security - No validation or sanitization for Zeek derived data that enters Redis has been implemented.
 Ensure your redis server is not accessible from the internet - unless that is a desired feature.
