@@ -7,7 +7,7 @@ const logger = require('./logger').getLogger(module);
 const redisClient = require('./redisClient');
 
 // Overriding BigInt serialization for JSON
-// eslint-disable-next-line no-extend-native
+// eslint-disable-next-line no-extend-native,func-names
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };

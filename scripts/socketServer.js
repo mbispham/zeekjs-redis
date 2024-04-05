@@ -2,6 +2,7 @@
 const net = require('net');
 const { processAndSendLog } = require('./ZeekRedis');
 const logger = require('./logger').getLogger(module);
+const { socketHost, socketPort } = require('./config');
 
 function createServer() {
   const server = net.createServer((socket) => {
@@ -34,15 +35,17 @@ function createServer() {
     });
   });
 
-  const host = process.env.HOST || '127.0.0.1';
-  const port = parseInt(process.env.PORT, 10) || 3000;
-
-  server.listen(port, host, () => {
-    logger.info(`Server listening on ${host}:${port}`);
-  });
+  server.listen(socketHost, socketPort);
 
   server.on('error', (err) => {
-    logger.error('Server error:', err);
+    if (err.code === 'EADDRINUSE') {
+      // If the error code is EADDRINUSE, suppress the error
+      // logger.info(`Port ${socketPort} is already in use. Suppressing error.`);
+      // Could try implementing a different port if this occurs
+    } else {
+      logger.error(`Server error: ${err.message}`);
+      logger.error(`Error Stack: ${err.stack}`);
+    }
   });
   return server;
 }

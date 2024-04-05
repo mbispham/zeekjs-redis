@@ -1,22 +1,28 @@
 // index.js
-require('dotenv').config();
 const logger = require('./logger').getLogger(module);
 const redisClient = require('./redisClient');
+const {
+  redisHost, redisPort, socketHost, socketPort,
+} = require('./config');
 const { createServer } = require('./socketServer');
 
 async function main() {
   try {
+    logger.info(`Attempting to connect to redis on ${redisHost}:${redisPort}`);
+    logger.info(`Attempting to create local socket on ${socketHost}:${socketPort}`);
     await redisClient.connect();
-    const port = process.env.SOCKET_PORT;
-    logger.info(`Starting server on port ${port}`);
-    createServer().listen(port);
+    createServer().listen(socketPort);
   } catch (err) {
-    logger.error('Initialization error:', err);
-    if (err.message.includes('Socket already opened')) {
-      // Handle the specific case where the socket is already opened
-      logger.info('Continuing with the existing Redis connection.');
-    } else {
-      // If the error is not about an already open connection, exit the process
+    logger.error(`Initialization error: ${err.message}`);
+    logger.error(`Error Stack: ${err.stack}`);
+    if (err.code) {
+      logger.error(`Error Code: ${err.code}`);
+    }
+    if (err.syscall) {
+      logger.error(`System Call: ${err.syscall}`);
+    }
+    if (err.address && err.port) {
+      logger.error(`Address: ${err.address}, Port: ${err.port}`);
       process.exit(1);
     }
   }
@@ -33,7 +39,7 @@ process.on('SIGINT', shutDown);
 
 main()
   .then(() => {
-    logger.info('Initialization successful');
+    logger.info('Local socket established; connected to Redis');
   })
   .catch((err) => {
     logger.error('Initialization failed:', err);
