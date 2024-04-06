@@ -48,7 +48,7 @@ append_cache_entry () {
 }
 
 # set defaults
-builddir=build
+builddir=build-intention
 zeekdist=""
 installroot="default"
 CMakeCacheEntries=""

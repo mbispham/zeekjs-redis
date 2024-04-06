@@ -3,11 +3,16 @@
 # Hooks to add custom options to the configure script.
 #
 
+ENV_FILE="scripts/.env"
+PACKAGE_JSON_DIR="."
+
 plugin_usage()
 {
     : # Do nothing
     cat <<EOF
     --install-npm-dependencies Install npm dependencies from package.json
+    --install-redis-cli        Install redis-cli if not present
+    --start-redis              Setup a local redis server
     --node-env=ENV             Node environment (prod or dev)
     --file-log-level=LEVEL     File log level (e.g., info, error)
     --redis-host=HOST          Redis Host
@@ -26,21 +31,95 @@ plugin_option()
     case "$1" in
         --install-npm-dependencies)
             echo "Installing npm dependencies..."
-            cd "$PACKAGE_JSON_DIR"
+            echo "Checking Node.js and npm installation..."
+
+            # Check for Node.js presence
+            if ! command -v node &> /dev/null; then
+                echo "Node.js is not installed."
+                return 1
+            fi
+
+            # Output version of Node.js
+            node_version=$(node -v)
+            echo "Node.js is installed - v$node_version"
+
+            # Check for npm presence
             if ! command -v npm &> /dev/null; then
-                echo "npm is not installed. Please install npm to proceed."
+                echo "npm is not installed."
+                echo "Exiting build...npm is required for installation of zeekjs-redis."
                 return 1
             fi
-            npm install
+
+            # Output version of npm
+            npm_version=$(npm -v)
+            echo "npm is installed - v$npm_version"
+
+
+            # Check package.json file
+            if [ ! -f "package.json" ]; then
+                echo "package.json not found."
+                return 1
+            fi
+
+            npm ls --depth=0
             if [ $? -ne 0 ]; then
-                echo "Failed to install npm packages."
-                return 1
+                echo "Installing missing npm packages..."
+                npm install
+                if [ $? -ne 0 ]; then
+                    echo "Failed to install npm packages."
+                    return 1
+                fi
+                echo "Installed npm packages:"
+                npm ls --depth=0
+            else
+                echo "All npm packages are up to date."
             fi
-            echo "npm dependencies installed successfully."
+
             cd - > /dev/null
             ;;
-        *)
-            return 1;
+        --install-redis-cli)
+            echo "Checking for Redis-cli presence..."
+            if ! command -v redis-cli &> /dev/null; then
+                echo "redis-cli is not installed."
+
+                # Identify the OS
+                OS=""
+                if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                    if [ -f /etc/debian_version ]; then
+                        OS="Debian/Ubuntu"
+                    elif [ -f /etc/redhat-release ]; then
+                        OS="CentOS/RHEL"
+                    fi
+                elif [[ "$OSTYPE" == "darwin"* ]]; then
+                    OS="macOS"
+                fi
+
+                # If OS is recognized, install redis-cli
+                if [ ! -z "$OS" ]; then
+                    echo "Installing redis-cli for $OS..."
+                    case "$OS" in
+                        "Debian/Ubuntu")
+                            sudo apt-get update
+                            sudo apt-get install redis-server
+                            ;;
+                        "macOS")
+                            brew install redis
+                            ;;
+                        "CentOS/RHEL")
+                            sudo yum install redis
+                            ;;
+                    esac
+                else
+                    echo "Operating system not supported for automated installation of redis-cli."
+                    exit 1
+                fi
+            else
+                echo "redis-cli is installed."
+            fi
+            ;;
+        --start-redis)
+            echo "Starting Redis server..."
+            redis-server /etc/redis/redis.conf --daemonize yes
             ;;
         --node-env=*)
             node_env=$(echo $1 | sed 's/--node-env=//')
