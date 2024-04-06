@@ -1,0 +1,181 @@
+#!/bin/sh
+#
+# Hooks to add custom options to the configure script.
+#
+
+ENV_FILE="scripts/.env"
+PACKAGE_JSON_DIR="."
+
+plugin_usage()
+{
+    : # Do nothing
+    cat <<EOF
+    --install-npm-dependencies Install npm dependencies from package.json
+    --install-redis-cli        Install redis-cli if not present
+    --start-redis              Setup a local redis server
+    --node-env=ENV             Node environment (prod or dev)
+    --file-log-level=LEVEL     File log level (e.g., info, error)
+    --redis-host=HOST          Redis Host
+    --redis-port=PORT          Redis Client Port (integer)
+    --redis-password=PASSWORD  Redis Password
+    --days-valid=DAYS          Validity days for Redis cert
+    --redis-cert-path=PATH     Redis Cert Path
+    --redis-conf-path=PATH     Redis Conf Path
+    --socket-host=HOST         Socket Host
+    --socket-port=PORT         Socket Port (integer)
+EOF
+}
+
+plugin_option()
+{
+    case "$1" in
+        --install-npm-dependencies)
+            echo "Installing npm dependencies..."
+            echo "Checking Node.js and npm installation..."
+
+            # Check for Node.js presence
+            if ! command -v node &> /dev/null; then
+                echo "Node.js is not installed."
+                return 1
+            fi
+
+            # Output version of Node.js
+            node_version=$(node -v)
+            echo "Node.js is installed - v$node_version"
+
+            # Check for npm presence
+            if ! command -v npm &> /dev/null; then
+                echo "npm is not installed."
+                echo "Exiting build...npm is required for installation of zeekjs-redis."
+                return 1
+            fi
+
+            # Output version of npm
+            npm_version=$(npm -v)
+            echo "npm is installed - v$npm_version"
+
+
+            # Check package.json file
+            if [ ! -f "package.json" ]; then
+                echo "package.json not found."
+                return 1
+            fi
+
+            npm ls --depth=0
+            if [ $? -ne 0 ]; then
+                echo "Installing missing npm packages..."
+                npm install
+                if [ $? -ne 0 ]; then
+                    echo "Failed to install npm packages."
+                    return 1
+                fi
+                echo "Installed npm packages:"
+                npm ls --depth=0
+            else
+                echo "All npm packages are up to date."
+            fi
+
+            cd - > /dev/null
+            ;;
+        --install-redis-cli)
+            echo "Checking for Redis-cli presence..."
+            if ! command -v redis-cli &> /dev/null; then
+                echo "redis-cli is not installed."
+
+                # Identify the OS
+                OS=""
+                if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                    if [ -f /etc/debian_version ]; then
+                        OS="Debian/Ubuntu"
+                    elif [ -f /etc/redhat-release ]; then
+                        OS="CentOS/RHEL"
+                    fi
+                elif [[ "$OSTYPE" == "darwin"* ]]; then
+                    OS="macOS"
+                fi
+
+                # If OS is recognized, install redis-cli
+                if [ ! -z "$OS" ]; then
+                    echo "Installing redis-cli for $OS..."
+                    case "$OS" in
+                        "Debian/Ubuntu")
+                            sudo apt-get update
+                            sudo apt-get install redis-server
+                            ;;
+                        "macOS")
+                            brew install redis
+                            ;;
+                        "CentOS/RHEL")
+                            sudo yum install redis
+                            ;;
+                    esac
+                else
+                    echo "Operating system not supported for automated installation of redis-cli."
+                    exit 1
+                fi
+            else
+                echo "redis-cli is installed."
+            fi
+            ;;
+        --start-redis)
+            echo "Starting Redis server..."
+            redis-server /etc/redis/redis.conf --daemonize yes
+            ;;
+        --node-env=*)
+            node_env=$(echo $1 | sed 's/--node-env=//')
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=$node_env/" "$ENV_FILE"
+            ;;
+        --file-log-level=*)
+            file_log_level=$(echo $1 | sed 's/--file-log-level=//')
+            sed -i "s/^FILE_LOG_LEVEL=.*/FILE_LOG_LEVEL=$file_log_level/" "$ENV_FILE"
+            ;;
+        --redis-host=*)
+            redis_host=$(echo $1 | sed 's/--redis-host=//')
+            sed -i "s/^REDIS_HOST=.*/REDIS_HOST=$redis_host/" "$ENV_FILE"
+            ;;
+        --redis-port=*)
+            redis_port=$(echo $1 | sed 's/--redis-port=//')
+            if ! echo "$redis_port" | grep -qE '^[0-9]+$'; then
+                echo "Error: Invalid port number. Please provide an integer." >&2
+                return 1
+            fi
+            sed -i "s/^REDIS_PORT=.*/REDIS_PORT=$redis_port/" "$ENV_FILE"
+            ;;
+        --redis-password=*)
+            redis_password=$(echo $1 | sed 's/--redis-password=//')
+            sed -i "s/^REDIS_PASSWORD=.*/REDIS_PASSWORD='$redis_password'/" "$ENV_FILE"
+            ;;
+        --days-valid=*)
+            days_valid=$(echo $1 | sed 's/--days-valid=//')
+            sed -i "s/^DAYS_VALID=.*/DAYS_VALID=$days_valid/" "$ENV_FILE"
+            ;;
+        --redis-cert-path=*)
+            redis_cert_path=$(echo $1 | sed 's/--redis-cert-path=//')
+            sed -i "s^REDIS_CERT_PATH=.*^REDIS_CERT_PATH=\"$redis_cert_path\"^" "$ENV_FILE"
+            ;;
+        --redis-conf-path=*)
+            redis_conf_path=$(echo $1 | sed 's/--redis-conf-path=//')
+            sed -i "s^REDIS_CONF_PATH=.*^REDIS_CONF_PATH=\"$redis_conf_path\"^" "$ENV_FILE"
+            ;;
+        --socket-host=*)
+            socket_host=$(echo $1 | sed 's/--socket-host=//')
+            sed -i "s/^SOCKET_HOST=.*/SOCKET_HOST=$socket_host/" "$ENV_FILE"
+            ;;
+        --socket-port=*)
+            socket_port=$(echo $1 | sed 's/--socket-port=//')
+            if ! echo "$socket_port" | grep -qE '^[0-9]+$'; then
+                echo "Error: Invalid port number. Please provide an integer." >&2
+                return 1
+            fi
+            sed -i "s/^SOCKET_PORT=.*/SOCKET_PORT=$socket_port/" "$ENV_FILE"
+            ;;
+        *)
+            return 1;
+            ;;
+    esac
+}
+
+plugin_addl()
+{
+    : # Do nothing
+}

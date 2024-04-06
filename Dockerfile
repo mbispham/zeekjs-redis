@@ -77,7 +77,7 @@ RUN apt-get install -y --no-install-recommends \
      && apt-get clean \
      && rm -rf /var/lib/apt/lists/*
 
-# Tell git all the repositories are safe.
+# git all the repositories are safe
 RUN git config --global --add safe.directory '*'
 
 # Install zkg
@@ -133,6 +133,6 @@ RUN zeek -N Zeek::JavaScript
 WORKDIR /home/
 RUN git clone https://github.com/mbispham/zeekjs-redis && \
     cd zeekjs-redis && \
-    bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
+    bash build-intention-scripts/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
 
 RUN zeek -r testing/Traces/zeekjs-redis-test.pcap ./scripts/index.js
