@@ -34,6 +34,7 @@ Install with zkg:
 zkg install https://github.com/mbispham/zeekjs-redis.git
 ```
 
+
 The following options can be used to aid with creating a suitable environmental for the package
 
     --install-npm-dependencies Install npm dependencies from package.json
@@ -50,6 +51,12 @@ The following options can be used to aid with creating a suitable environmental 
     --socket-host=HOST         Socket Host
     --socket-port=PORT         Socket Port (integer)
 
+
+If you have a local redis setup and either want to use default settings or modify scipts/.env directly install can be achived with:
+```
+zkg install https://github.com/mbispham/zeekjs-redis.git --force
+```
+
 ### Filtered Log Usage
 
 Rather than sending all Zeek logs to Redis a common use case could be to output a section of a specific log type.
@@ -62,8 +69,8 @@ Let's show how to implement that...
 This package was not written with the intention of being run as is in production envs. Some considerations are listed below if you want to use it in such an environment.
 
 - **Security**:
-  - No validation or sanitization for Zeek derived data that enters Redis has been implemented.
-  - Ensure your redis server is not accessible from the internet - unless that is a desired feature.
+  - No validation or sanitization for Zeek derived data that enters Redis has been implemented
+  - Ensure your redis server is not accessible from the internet - unless that is a desired feature
   - The Redis Password is written out to a .env file - consider a more secure implementation
 - **Persistence**: 
   - No persistence is configured
@@ -82,7 +89,7 @@ This package was not written with the intention of being run as is in production
 - [**WRCCDC**](https://wrccdc.org): test.pcap is carved from a publicly available trace released under a [creative commons license](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ### License 
-zeekjs-redis is free and open-source software licensed under the [3-clause BSD license](LICENSE).
+zeekjs-redis is free and open-source software licensed under the [3-clause BSD license](LICENSE)
 
 ### Feedback and Contributions
-Feedback and/or contributions are welcome if anyone finds this package useful. 
+Feedback and/or contributions are welcome if anyone finds this package useful 
