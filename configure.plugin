@@ -29,7 +29,6 @@ EOF
 plugin_option()
 {
     case "$1" in
-    case "$1" in
         --install-npm-dependencies=*)
             install_deps=$(echo $1 | sed 's/--install-npm-dependencies=//')
             install_deps=$(echo $install_deps | tr '[:upper:]' '[:lower:]')
