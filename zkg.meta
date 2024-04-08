@@ -1,6 +1,21 @@
 [package]
 script_dir = scripts
-build_command = cat img/banner.txt > /dev/pts/1 2>&1 < /dev/pts/1 && ./configure --install-npm-dependencies=%(install_npm_dependencies)s && cd build && make
+build_command = cat img/banner.txt > /dev/pts/1 2>&1 < /dev/pts/1 && \
+                ./configure \
+                --install-npm-dependencies=%(install_npm_dependencies)s \
+                --install-redis-cli=%(install_redis_cli)s \
+                --start-redis=%(start_redis)s \
+                --node-env=%(zeekjs_redis_node_env)s \
+                --file-log-level=%(zeekjs_redis_file_log_level)s \
+                --redis-host=%(REDIS_HOST)s \
+                --redis-port=%(REDIS_PORT)s \
+                --redis-password=%(generate_redis_password)s \
+                --days-valid=%(redis_cert_days_valid)s \
+                --redis-cert-path=%(redis_cert_path)s \
+                --redis-conf-path=%(redis_conf_path)s \
+                --socket-host=%(REDIS_SOCKET_HOST)s \
+                --socket-port=%(REDIS_SOCKET_PORT)s && \
+                cd build && make
 # test_command = cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that overwrites the Logging
@@ -11,6 +26,18 @@ depends =
   zeek >=4.2.0
 user_vars =
     install_npm_dependencies [] "Install npm dependencies (N/y)"
+    install_redis_cli [] "Install redis-cli https://redis.io/docs/connect/cli/ (N/y)"
+    start_redis [] "Setup a local redis server (N/y)"
+    zeekjs_redis_node_env [] "Node environment (production/development)"
+    zeekjs_redis_file_log_level [] "File log level (info, error, http, warn, verbose, debug, silly)"
+    REDIS_HOST [] "Redis Host"
+    REDIS_PORT [] "Redis Client Port (integer)"
+    generate_redis_password [] "Redis Password"
+    redis_cert_days_valid [] "Validity days for Redis cert"
+    redis_cert_path [] "Redis Cert Path"
+    redis_conf_path [] "Redis Conf Path"
+    REDIS_SOCKET_HOST [] "Socket Host"
+    REDIS_SOCKET_PORT [] "Port for socket connection ()"
 tags = redis, logging, intel, javascript, js, plugin
 
 [template]
