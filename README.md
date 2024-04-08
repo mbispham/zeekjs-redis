@@ -5,14 +5,14 @@ ZeekJS-Redis
 
 This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) package implements a method of parsing [Zeek](https://zeek.org/) logs to [Redis](https://redis.io/).
 
-[ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. The net module from Node.js is used to create a socket over which data is sent from Zeek to Redis. 
+[ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. The [net](https://nodejs.org/api/net.html) module from [Node.js](https://nodejs.org/) is used to create a socket over which data is sent from Zeek to Redis. 
 
-- **redisClient.js**: Creates a Redis client instance
-- **socketServer.js**: Establishes a socket to handle and process data from Zeek to Redis
-- **ZeekRedis.js**: Hooks into Zeek logs and sends the logs to a Redis server
+- [**redisClient.js**](https://github.com/mbispham/zeekjs-redis/blob/main/scripts/redisClient.js): Creates a Redis client instance
+- [**socketServer.js**](https://github.com/mbispham/zeekjs-redis/blob/main/scripts/socketServer.js): Establishes a socket to handle and process data from Zeek to Redis
+- [**ZeekRedis.js**](https://github.com/mbispham/zeekjs-redis/blob/main/scripts/ZeekRedis.js): Hooks into Zeek logs and sends the logs to a Redis server
 
 The intent with the development of this package was to "kick the tyres" and gain familiarity with ZeekJS.
-The overall experience was that you could quickly have a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled more focus on implementing some config options such as a flag to install the required Node.js packages during the build.  
+The overall experience was that you could quickly have a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled more focus on implementing some config options such as a flag to install required Node.js packages during the build.  
 
 ### Example
 
@@ -74,10 +74,6 @@ This package was not written with the intention of being running in production e
 - **Performance** 
   - Single threaded
 
-### Feedback and Contributions
-
-Feedback and/or contributions are welcome if anyone finds this package useful. 
-
 ### Acknowledgements
 
 - [**Christian Kreibich**](https://github.com/ckreibich): Zeek project technical lead
@@ -87,3 +83,6 @@ Feedback and/or contributions are welcome if anyone finds this package useful.
 
 ### License 
 zeekjs-redis is free and open-source software licensed under the [3-clause BSD license](LICENSE).
+
+### Feedback and Contributions
+Feedback and/or contributions are welcome if anyone finds this package useful. 
