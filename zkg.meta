@@ -1,6 +1,6 @@
 [package]
 script_dir = scripts
-build_command = cat img/banner.txt > /dev/pts/1 2>&1 < /dev/pts/1 && ./configure && cd build && make
+build_command = cat img/banner.txt > /dev/pts/1 2>&1 < /dev/pts/1 && ./configure --install-npm-dependencies=%(install_npm_dependencies)s && cd build && make
 # test_command = cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that overwrites the Logging
@@ -9,8 +9,8 @@ description = A zkg package that overwrites the Logging
     conn.log should be stored in the key zeek_conn_logs.
 depends =
   zeek >=4.2.0
-#user_vars =
-#    REDIS_PORT [] "Port of redis server (leave blank for defaults)"
+user_vars =
+    install_npm_dependencies [] "Install npm dependencies (N/y)"
 tags = redis, logging, intel, javascript, js, plugin
 
 [template]
@@ -21,4 +21,3 @@ zkg_version = 3.0.1
 [template_vars]
 name = zeekjs-redis
 license = bsd-3
-
