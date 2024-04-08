@@ -29,53 +29,45 @@ EOF
 plugin_option()
 {
     case "$1" in
-        --install-npm-dependencies)
-            echo "Installing npm dependencies..."
-            echo "Checking Node.js and npm installation..."
+    case "$1" in
+        --install-npm-dependencies=*)
+            install_deps=$(echo $1 | sed 's/--install-npm-dependencies=//')
+            install_deps=$(echo $install_deps | tr '[:upper:]' '[:lower:]')
 
-            # Check for Node.js presence
-            if ! command -v node &> /dev/null; then
-                echo "Node.js is not installed."
-                return 1
-            fi
+            if [ "$install_deps" = "y" ] || [ "$install_deps" = "yes" ]; then
+                echo "Installing npm dependencies..."
+              echo "Checking Node.js and npm installation..."
 
-            # Output version of Node.js
-            node_version=$(node -v)
-            echo "Node.js is installed - v$node_version"
+              # Output version of Node.js
+              node_version=$(node -v)
+              echo "Node.js is installed - v$node_version"
 
-            # Check for npm presence
-            if ! command -v npm &> /dev/null; then
-                echo "npm is not installed."
-                echo "Exiting build...npm is required for installation of zeekjs-redis."
-                return 1
-            fi
+              # Output version of npm
+              npm_version=$(npm -v)
+              echo "npm is installed - v$npm_version"
 
-            # Output version of npm
-            npm_version=$(npm -v)
-            echo "npm is installed - v$npm_version"
+              # Check package.json file
+              if [ ! -f "package.json" ]; then
+                  echo "package.json not found."
+                  return 1
+              fi
 
-
-            # Check package.json file
-            if [ ! -f "package.json" ]; then
-                echo "package.json not found."
-                return 1
-            fi
-
-            npm ls --depth=0
-            if [ $? -ne 0 ]; then
-                echo "Installing missing npm packages..."
-                npm install
-                if [ $? -ne 0 ]; then
-                    echo "Failed to install npm packages."
-                    return 1
-                fi
-                echo "Installed npm packages:"
-                npm ls --depth=0
+              npm ls --depth=0
+              if [ $? -ne 0 ]; then
+                  echo "Installing missing npm packages..."
+                  npm install
+                  if [ $? -ne 0 ]; then
+                      echo "Failed to install npm packages."
+                      return 1
+                  fi
+                  echo "Installed npm packages:"
+                  npm ls --depth=0
+              else
+                  echo "All npm packages are up to date."
+              fi
             else
-                echo "All npm packages are up to date."
+                echo "Skipping npm dependencies installation."
             fi
-
-            cd - > /dev/null
             ;;
         --install-redis-cli)
             echo "Checking for Redis-cli presence..."
