@@ -1,12 +1,22 @@
 ZeekJS-Redis
 =================================
 
-***work in progress*** ...
+**Work in Progress...**
 
-This zkg package implements a method of parsing Zeek logs to Redis.
+This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) package implements a method of parsing [Zeek](https://zeek.org/) logs to [Redis](https://redis.io/).
+
+[ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. The net module from Node.js is used to create a socket over which data is sent from Zeek to Redis. 
+
+- **redisClient.js**: Creates a Redis client instance
+- **socketServer.js**: Establishes a socket to handle and process data from Zeek to Redis
+- **ZeekRedis.js**: Hooks into Zeek logs and sends the logs to a Redis server
+
+The intent with the development of this package was to "kick the tyres" and gain familiarity with ZeekJS.
+The overall experience was that you could quickly have a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled more focus on implementing some config options such as a flag to install the required Node.js packages during the build.  
+
+### Example
 
 ```# zeek -C LogAscii::use_json=T -r testing/Traces/zeekjs-redis-test.pcap ./scripts/index.js```
-
 ```
 # redis-cli
 127.0.0.1:6379> KEYS *
@@ -17,45 +27,56 @@ This zkg package implements a method of parsing Zeek logs to Redis.
 24) "{\"ts\":...
 ```
 
-- **index.js**: Utilizes Node.js's net module to send Zeek logs to a Redis server
-- **redisClient.js**: Creates and manages a Redis client instance
-- **socketServer.js**: Establishes a socket to handle and process incoming Zeek data
-- **ZeekRedis.js**: Hooks into Zeek logs, flattens the JSON and sends the logs to a Redis server.
-
 ### Build
 
-For now Git clone and then:
+Install with zkg:
 ```
-bash build/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
+zkg install https://github.com/mbispham/zeekjs-redis.git
 ```
 
-In the build you get a prompt to:
-1. Create a redis password 
-2. A local certificate
-3. Install dependencies using npm
+The following options can be used to aid with creating a suitable environmental for the package
 
-TODO - Change so handled by Zeek plugin configuration  
+    --install-npm-dependencies Install npm dependencies from package.json
+    --install-redis-cli        Install redis-cli if not present
+    --start-redis              Setup a local redis server
+    --node-env=ENV             Node environment (prod or dev)
+    --file-log-level=LEVEL     File log level (e.g., info, error)
+    --redis-host=HOST          Redis Host
+    --redis-port=PORT          Redis Client Port (integer)
+    --redis-password=PASSWORD  Redis Password
+    --days-valid=DAYS          Validity days for Redis cert
+    --redis-cert-path=PATH     Redis Cert Path
+    --redis-conf-path=PATH     Redis Conf Path
+    --socket-host=HOST         Socket Host
+    --socket-port=PORT         Socket Port (integer)
 
 ### Filtered Log Usage
 
 Rather than sending all Zeek logs to Redis a common use case could be to output a section of a specific log type.
-Lets show how to implement that...
+Let's show how to implement that...
 
 ...TODO - Add example of filtered log
 
+### Production Worthy?
 
-### Considerations for Production
+This package was not written with the intention of being running in production envs. Some considerations below if you want to use it in such an environment.
 
-Security - No validation or sanitization for Zeek derived data that enters Redis has been implemented.
-Ensure your redis server is not accessible from the internet - unless that is a desired feature.
+- **Security**:
+  - No validation or sanitization for Zeek derived data that enters Redis has been implemented.
+  - Ensure your redis server is not accessible from the internet - unless that is a desired feature.
+  - The Redis Password is written out to a .env file - consider a more secure implementation
+- **Persistence**: 
+  - No persistence is configured
+- **Replication**
+  - No data is replicated which may be a consideration for a production environment
+- **Hardware**
+  - Ensure you have enough RAM - redis is memory intensive - Zeek can churn out a lot of data
+- **Performance** 
+  - Single threaded
 
-Persistence Configuration - No persistence is configured
+### Feedback and Contributions
 
-Replication - No data is replicated which may be a consideration for a production environment
-
-Hardware - Ensure you have enough RAM - redis is memory intensive - Zeek can churn out a lot of data
-
-Performance - single threaded
+Feedback and/or contributions are welcome if anyone finds this package useful. 
 
 ### Acknowledgements
 
