@@ -59,7 +59,7 @@ Let's show how to implement that...
 
 ### Production Worthy?
 
-This package was not written with the intention of being running in production envs. Some considerations below if you want to use it in such an environment.
+This package was not written with the intention of being run as is in production envs. Some considerations are listed below if you want to use it in such an environment.
 
 - **Security**:
   - No validation or sanitization for Zeek derived data that enters Redis has been implemented.
