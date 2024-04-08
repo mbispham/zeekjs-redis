@@ -1,7 +1,6 @@
 [package]
 script_dir = scripts
-#build_command = cat img/banner.txt && ./configure --redis-port=%(REDIS_PORT)i && cd build && make
-build_command = ./configure && cd build && make
+build_command = cat img/banner.txt > /dev/pts/1 2>&1 < /dev/pts/1 && ./configure && cd build && make
 # test_command = cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that overwrites the Logging
@@ -10,8 +9,8 @@ description = A zkg package that overwrites the Logging
     conn.log should be stored in the key zeek_conn_logs.
 depends =
   zeek >=4.2.0
-user_vars =
-    REDIS_PORT [] "Port of redis server (leave blank for defaults)"
+#user_vars =
+#    REDIS_PORT [] "Port of redis server (leave blank for defaults)"
 tags = redis, logging, intel, javascript, js, plugin
 
 [template]
