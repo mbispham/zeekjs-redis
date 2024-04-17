@@ -15,8 +15,8 @@ The intent with the development of this package was to "[kick the tyres](https:/
 zeek -C LogAscii::use_json=T -r testing/Traces/zeekjs-redis-test.pcap ./scripts/index.js
 ```
 ```
-# redis-cli -s /path/to/redis.sock
-127.0.0.1:6379> KEYS *
+# redis-cli -s /var/run/redis/redis.sock
+redis /var/run/redis/redis.sock> KEYS *
 1) "zeek_conn_logs"
 127.0.0.1:6379> LRANGE zeek_conn_logs 0 -1
 1)  "{\"ts\":1616775350.763199,\"uid\":\"CNT4R81EW9Y2E6nXLl\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.1\",\"resp_p\":31981},\"proto\":\"tcp\",\"conn_state\":\"S0\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"S\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":0,\"resp_ip_bytes\":0}"
