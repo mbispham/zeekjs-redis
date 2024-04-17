@@ -7,7 +7,7 @@ This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) pa
 
 [ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. A local Unix socket is used to enable data transmission from Zeek to Redis. 
 
-The intent with the development of this package was to "[kick the tyres](https://dictionary.cambridge.org/dictionary/english/kick-the-tires)" and gain familiarity with ZeekJS. The overall experience was positive; it was possible to create a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled implemention of config options, such as a flag to install required Node.js packages during the build.  
+The intent with the development of this package was to "[kick the tyres](https://dictionary.cambridge.org/dictionary/english/kick-the-tires)" and gain familiarity with ZeekJS. The overall experience was positive; it was possible to create a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled implemention of more involved config options.  
 
 ### Example
 
