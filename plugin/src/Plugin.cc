@@ -9,9 +9,9 @@ zeek::plugin::Configuration Plugin::Configure()
         {
         zeek::plugin::Configuration config;
         config.name = "zeekjs::redis";
-        config.description = "ZeekJS to Redis.";
-        config.version.major = VERSION_MAJOR;
-        config.version.minor = VERSION_MINOR;
-        config.version.patch = VERSION_PATCH;
+        config.description = "Interface between Zeek and Redis using JavaScript.";
+        config.version.major = 1;
+        config.version.minor = 0;
+        config.version.patch = 0;
         return config;
         }
