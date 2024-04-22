@@ -1,2 +1,2 @@
-# @TEST-EXEC: zeek -NN zeekjsredis::isight |sed -e 's/version.*)/version)/g' >output
+# @TEST-EXEC: zeek -NN zeekjs::redis |sed -e 's/version.*)/version)/g' >output
 # @TEST-EXEC: btest-diff output
