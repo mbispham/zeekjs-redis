@@ -90,6 +90,19 @@ If the intention is to export specific fields from Zeek logs to Redis, an exampl
   ...
 ```
 
+### Dependencies
+
+- [Zeek > 6.0.2](https://github.com/zeek/zeek/blob/master/NEWS#L647) - Experimental ZeekJS is builtin and does not need to be installed as a seperate package
+
+- [Redis-cli](https://redis.io/docs/latest/develop/connect/cli/)
+
+- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+  - [dotenv](https://www.npmjs.com/package/dotenv)
+  - [redis](https://www.npmjs.com/package/redis)
+  - [safe-stable-stringify](https://www.npmjs.com/package/safe-stable-stringify)
+  - [validator](https://www.npmjs.com/package/validator)
+  - [winston](https://www.npmjs.com/package/winston)
+
 ### Acknowledgements
 
 - [**Christian Kreibich**](https://github.com/ckreibich): [Zeek](https://zeek.org/) project technical lead
