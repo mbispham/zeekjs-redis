@@ -131,8 +131,5 @@ RUN zeek -N Zeek::JavaScript
 
 # Compile, test and install plugin
 WORKDIR /home/
-RUN git clone https://github.com/mbispham/zeekjs-redis && \
-    cd zeekjs-redis && \
-    bash build-intention-scripts/zeekjs_redis.sh 2>&1 | tee zeekjs_redis_output.log
-
-RUN zeek -r testing/Traces/zeekjs-redis-test.pcap ./scripts/index.js
+# TODO - add method to supply commands to zkg install process
+RUN zkg install https://github.com/mbispham/zeekjs-redis --force
