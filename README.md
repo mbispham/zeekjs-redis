@@ -1,7 +1,7 @@
 ZeekJS-Redis
 =================================
 
-This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) package implements a method of parsing [Zeek](https://zeek.org/) logs to [Redis](https://redis.io/). [ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. A [Unix socket](https://en.wikipedia.org/wiki/Unix_domain_socket) is used to enable data transmission from [Zeek](https://zeek.org/) to [Redis](https://redis.io/).
+This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) package implements a method of parsing [Zeek](https://zeek.org/) logs to [Redis](https://redis.io/). [ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. Using a [Unix socket](https://en.wikipedia.org/wiki/Unix_domain_socket) for data transmission, this package builds upon the (log-bypass)[https://github.com/corelight/zeekjs/blob/main/doc/examples/log-bypass.js] example from the ZeekJS repository, to enhance storage options and faster data analysis.
 
 <p align="center">
   <img src="img/zeek-socket-redis.png" alt="ZeekJS-Redis Diagram">
@@ -92,9 +92,9 @@ If the intention is to export specific fields from Zeek logs to Redis, an exampl
 
 ### Dependencies
 
-- [Zeek > 6.0.2](https://github.com/zeek/zeek/blob/master/NEWS#L647) - Experimental ZeekJS is builtin and does not need to be installed as a seperate package
+- [Zeek > 6.0.2](https://github.com/zeek/zeek/blob/master/NEWS#L647) - Experimental ZeekJS supported as a builtin package
 - [Redis-cli](https://redis.io/docs/latest/develop/connect/cli/)
-- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) - Ensure Node.js is [configured](https://zeekjs.readthedocs.io/en/latest/#compiling-node-js-from-source) with shared OpenSSL 
   - [dotenv](https://www.npmjs.com/package/dotenv)
   - [redis](https://www.npmjs.com/package/redis)
   - [safe-stable-stringify](https://www.npmjs.com/package/safe-stable-stringify)
