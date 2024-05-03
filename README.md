@@ -1,7 +1,7 @@
 ZeekJS-Redis
 =================================
 
-This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) package implements a method of parsing [Zeek](https://zeek.org/) logs to [Redis](https://redis.io/). [ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. Using a [Unix socket](https://en.wikipedia.org/wiki/Unix_domain_socket) for data transmission, this package builds upon the (log-bypass)[https://github.com/corelight/zeekjs/blob/main/doc/examples/log-bypass.js] example from the ZeekJS repository, to enhance storage options and faster data analysis.
+This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) package implements a method of parsing [Zeek](https://zeek.org/) logs to [Redis](https://redis.io/). [ZeekJS](https://zeekjs.readthedocs.io) is utilised to achieve this. Using a [Unix socket](https://en.wikipedia.org/wiki/Unix_domain_socket) for data transmission, this package builds upon the [log-bypass](https://github.com/corelight/zeekjs/blob/main/doc/examples/log-bypass.js) example from the ZeekJS repository, to enhance storage options and faster data analysis.
 
 <p align="center">
   <img src="img/zeek-socket-redis.png" alt="ZeekJS-Redis Diagram">
