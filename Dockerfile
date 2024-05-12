@@ -133,5 +133,5 @@ RUN zeek -N Zeek::JavaScript
 # Compile, test and install plugin
 WORKDIR /home/
 COPY install_zeekjs_redis.sh .
-RUN install_zeekjs_redis.sh
+RUN ./install_zeekjs_redis.sh
 
