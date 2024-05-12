@@ -11,9 +11,6 @@
     "url": "git+git@github.com:mbispham/zeekjs-redis"
   },
   "license": "BSD-3-Clause",
-  "engines": {
-    "node": ">=20.11.1"
-  },
   "dependencies": {
     "dotenv": ">=16.4.5",
     "redis": ">=4.6.13",
