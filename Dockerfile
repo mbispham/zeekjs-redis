@@ -22,6 +22,7 @@ RUN apt-get install -y --no-install-recommends \
       cmake \
       cmake-data \
       distro-info-data \
+      expect \
       file \
       flex \
       g++ \
@@ -131,5 +132,6 @@ RUN zeek -N Zeek::JavaScript
 
 # Compile, test and install plugin
 WORKDIR /home/
-# TODO - add method to supply commands to zkg install process
-RUN zkg install https://github.com/mbispham/zeekjs-redis --force
+COPY install_zeekjs_redis.sh .
+RUN install_zeekjs_redis.sh
+
