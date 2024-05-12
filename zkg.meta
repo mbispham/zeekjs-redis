@@ -1,12 +1,6 @@
 [package]
 script_dir = scripts
-build_command = ./configure \
-                --install-npm-dependencies=%(install_npm_dependencies)s \
-                --install-redis-cli=%(install_redis_cli)s \
-                --redis-conf-path=%(redis_conf_path)s \
-                --redis-socket-path=%(redis_socket_path)s \
-                --start-redis-server=%(start_redis_server)s && \
-                cd build && make
+build_command = ./configure && cd build && make
 test_command = cat img/banner.txt > /dev/pts/1 2>&1 < /dev/pts/1 && cd testing && btest -c btest.cfg
 summary = Zeek Logs to Redis (ZeekJS Version)
 description = A zkg package that uses ZeekJS to overwrite
@@ -16,12 +10,6 @@ description = A zkg package that uses ZeekJS to overwrite
     zeek_conn_logs.
 depends =
   zeek >=4.2.0
-user_vars =
-    install_npm_dependencies [] "Install npm dependencies (N/y)"
-    install_redis_cli [] "Install redis-cli https://redis.io/docs/connect/cli/ (N/y)"
-    redis_conf_path [] "Path for Redis configuration file (/etc/redis/redis.conf)"
-    redis_socket_path [] "Path for Redis socket (/var/run/redis/redis.sock)"
-    start_redis_server [] "Setup a local redis server (N/y)"
 tags = redis, logging, intel, javascript, js, plugin
 
 [template]
