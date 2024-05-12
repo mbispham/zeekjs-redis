@@ -10,8 +10,14 @@ RUN apt-get install -y --no-install-recommends \
     libpcap-dev \
     redis-server \
     jq \
-    npm
+    npm \
+    vim
 
+# FIXME remove vim
+# FIXME add a better test for the plugin
+
+RUN sed -i "s|# unixsocket /run/redis/redis-server.sock|unixsocket /var/run/redis/redis.sock|" /etc/redis/redis.conf
+RUN /etc/init.d/redis-server restart
 
 COPY . /staging
 
@@ -20,11 +26,8 @@ WORKDIR /staging
 # FIXME this should be better
 RUN git config --global --add safe.directory '*'
 
-# FIXME adjust redis.conf in our docker
-
-# FIXME temporarily disable dirty check
-
 RUN npm install
+RUN rm package-lock.json
 RUN zkg install . --force
 
 CMD bash
