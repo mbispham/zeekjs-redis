@@ -23,11 +23,13 @@ COPY . /staging
 
 WORKDIR /staging
 
-# FIXME this should be better
+# This is necessary for git to recognize this directory as being safe
 RUN git config --global --add safe.directory '*'
 
 RUN npm install
+RUN mv node_modules /root/.node_modules
+
 RUN rm package-lock.json
 RUN zkg install . --force
 
-CMD bash
+CMD /etc/init.d/redis-server start && bash
