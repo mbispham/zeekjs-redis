@@ -7,14 +7,66 @@ This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) pa
   <img src="img/zeek-socket-redis.png" alt="ZeekJS-Redis Diagram">
 </p>
 
-The intent with the development of this package was to "[kick the tyres](https://dictionary.cambridge.org/dictionary/english/kick-the-tires)" and gain familiarity with [ZeekJS](https://zeekjs.readthedocs.io). The overall experience was positive; it was possible to create a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled implemention of more involved [config options](https://github.com/mbispham/zeekjs-redis/blob/main/configure.plugin).  
+The intent with the development of this package was to "[kick the tyres](https://dictionary.cambridge.org/dictionary/english/kick-the-tires)" and gain familiarity with [ZeekJS](https://zeekjs.readthedocs.io). The overall experience was positive; it was possible to create a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled implemention of more involved [config options](https://github.com/mbispham/zeekjs-redis/blob/main/configure.plugin).
 
-### Example
+## Installing and configuring the plugin
 
-**1. Run the test PCAP through Zeek:**  
+### Pre-requisites
+
+You will need the following on your machine to install and configure the plugin (tip: see below how to build and use the supplied Docker container to try it out!).
+
+- Zeek installed with ZeekJS support
+- [zkg](https://docs.zeek.org/projects/package-manager/en/stable/index.html) Zeek package manager
+- `npm` package manager
+- a configured and running `redis-server`.
+
+### Install zeekjs-redis plugin
+
+Clone this repository:
+
+```
+git clone https://github.com/mbispham/zeekjs-redis.git
+```
+
+Install with `zkg`:
+```
+zkg install .
+```
+
+### Install all npm dependencies
+
+The plugin will need some more `npm` modules which can be installed as follows:
+
+```
+npm install
+```
+
+Note: you might have to change the systen `NODE_PATH` in order for Zeek to be able to find them.
+
+### Configure redis-server
+
+You will need to have `redis-server` installed and running using a unixsocket. Check the documentation on your platform but usually this is done by editing `/etc/redis/redis.conf` and adding the follwing line:
+
+```
+unixsocket /var/run/redis/redis.sock
+```
+
+or another path of choice.
+
+### Configure socketpath in plugin
+
+The plugin will need to know the socketpath of the `redis-server`. If you have chosen another path than in the previous step, you will need to change the value of `ZEEKJS_REDIS_SOCKET_PATH` in the following file:
+
+```
+/usr/local/zeek/var/lib/zkg/clones/package/zeekjs-redis.git/scripts/.env
+```
+
+### Run Zeek on a pcap
+
+**1. Run the test PCAP through Zeek:**
 After installing the package run the test pcap with zeek.
 ```shell
-/opt/zeek/var/lib/zkg/clones/package/zeekjs-redis.git# zeek -C LogAscii::use_json=T -r testing/Traces/zeekjs-redis-test.pcap ./scripts/index.js
+zeek -C LogAscii::use_json=T -r <pcap>
 ```
 `-C` avoids checksum errors, `LogAscii::use_json=T` enables JSON formatted logs. Note, if installing from a local git pull, the pathway is likely:
 
@@ -23,13 +75,13 @@ PREFIX_PATH=$(zeek-config --prefix)
 FULL_PATH="${PREFIX_PATH}/var/lib/zkg/clones/package/zeekjs-redis"
 ```
 
-**2. Access Redis using the CLI:**  
+**2. Access Redis using the CLI:**
 Connect to Redis through the Unix socket to query the results.
 ```shell
 /opt/zeek/var/lib/zkg/clones/package/zeekjs-redis.git# redis-cli -s /var/run/redis/redis.sock
 ```
 
-**3. View the keys stored in Redis:**  
+**3. View the keys stored in Redis:**
 Check what keys are in Redis after running Zeek.
 ```
 redis /var/run/redis/redis.sock> KEYS *
@@ -37,38 +89,51 @@ redis /var/run/redis/redis.sock> KEYS *
 2) "zeek_conn_logs"
 ```
 
-**4. Retrieve log data from Redis:**  
+**4. Retrieve log data from Redis:**
 Fetch the stored conn logs.
 ```
 redis /var/run/redis/redis.sock> LRANGE zeek_conn_logs 0 -1
 ```
 
 Example Output:
-``` 
+```
 1) "{\"ts\":1616775350.763199,\"uid\":\"XXX\",\"id\":{\"orig_h\":\"192.168.220.35\",\"orig_p\":53537,\"resp_h\":\"192.168.220.1\",\"resp_p\":31981},\"proto\":\"tcp\",\"conn_state\":\"S0\",\"local_orig\":true,\"local_resp\":true,\"missed_bytes\":0,\"history\":\"S\",\"orig_pkts\":1,\"orig_ip_bytes\":44,\"resp_pkts\":0,\"resp_ip_bytes\":0}"
 ...
 24) "{\"ts\":...
 ```
 
-### Build
+## Build and use Docker image
 
-Install with [zkg](https://docs.zeek.org/projects/package-manager/en/stable/index.html):
-```
-zkg install https://github.com/mbispham/zeekjs-redis.git
+You can also try ZeekJS-redis using Docker! To do so, make sure you have Docker installed and build the image:
+
+```shell
+docker build .
 ```
 
-The following options can be used to create a suitable environmental for the package
+Then start the container with
 
-    --install-npm-dependencies Install npm dependencies from package.json (N/y)
-    --install-redis-cli        Install redis-cli if not present (N/y)
-    --redis-conf-path=PATH     The path to Redis config (Default = /etc/redis/redis.conf)
-    --redis-socket-path=PATH   The path to Redis socket (Default = /var/run/redis/redis.sock)
-    --start-redis-server       Start redis server (N/y)
+```shell
+docker run -it <id>
+```
 
-Install with `--force` if you want to install npm dependencies separately, use default settings, or modify `scipts/.env` directly:
+This will start `redis-server` and drop you into a `bash` shell. From here you can test the supplied pcap using:
+
+```shell
+root@xxxxx:~$ zeek -Cr zeekjs-redis-test.pcap
 ```
-zkg install https://github.com/mbispham/zeekjs-redis.git --force
+
+Output will be like this:
 ```
+info: Connected to Redis successfully. {"label":"index.js","timestamp":"2024-05-13 19:39:15"}
+info: Connected to Redis through Unix socket. {"label":"index.js","timestamp":"2024-05-13 19:39:15"}
+info: Log stream policy hook setup successfully. {"label":"index.js","timestamp":"2024-05-13 19:39:15"}
+Main function completed successfully.
+```
+
+Refer to [here](##Run-Zeek-on-a-pcap) to learn how to retrieve the values from `redis`.
+
+
+
 
 ### Filtered Log Usage
 
@@ -94,7 +159,7 @@ If the intention is to export specific fields from Zeek logs to Redis, an exampl
 
 - [Zeek > 6.0.2](https://github.com/zeek/zeek/blob/master/NEWS#L647) - Experimental ZeekJS supported as a builtin package
 - [Redis-cli](https://redis.io/docs/latest/develop/connect/cli/)
-- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) - Ensure Node.js is [configured](https://zeekjs.readthedocs.io/en/latest/#compiling-node-js-from-source) with shared OpenSSL 
+- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
   - [dotenv](https://www.npmjs.com/package/dotenv)
   - [redis](https://www.npmjs.com/package/redis)
   - [safe-stable-stringify](https://www.npmjs.com/package/safe-stable-stringify)
@@ -108,7 +173,7 @@ If the intention is to export specific fields from Zeek logs to Redis, an exampl
 - [**Simeon Miteff**](https://github.com/simeonmiteff): The structure of this project was inspired by Simeon's work on integrating telegram with Zeek [zeekjs-notice-telegram](https://github.com/corelight/zeekjs-notice-telegram)
 - [**WRCCDC**](https://wrccdc.org): [zeekjs-redis-test.pcap](https://github.com/mbispham/zeekjs-redis/blob/main/testing/Traces/zeekjs-redis-test.pcap) is carved from a publicly available trace released under a [creative commons license](https://creativecommons.org/licenses/by-sa/4.0/)
 
-### License 
+### License
 [zeekjs-redis](https://github.com/mbispham/zeekjs-redis) is free and open-source software licensed under the [3-clause BSD license](LICENSE).
 
 ### Feedback and Contributions
