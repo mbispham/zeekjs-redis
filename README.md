@@ -78,7 +78,7 @@ FULL_PATH="${PREFIX_PATH}/var/lib/zkg/clones/package/zeekjs-redis"
 **2. Access Redis using the CLI:**
 Connect to Redis through the Unix socket to query the results.
 ```shell
-/opt/zeek/var/lib/zkg/clones/package/zeekjs-redis.git# redis-cli -s /var/run/redis/redis.sock
+redis-cli -s /var/run/redis/redis.sock
 ```
 
 **3. View the keys stored in Redis:**
