@@ -1,35 +1,36 @@
 FROM zeek/zeek:latest
 
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils software-properties-common curl ca-certificates gnupg2
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     make \
-    g++ \
-    libssl-dev \
     libpcap-dev \
+    g++ \
     redis-server \
-    jq \
     npm \
     vim
 
-# FIXME remove vim
-# FIXME add a better test for the plugin
-
+# Configure unixsocket for redis
 RUN sed -i "s|# unixsocket /run/redis/redis-server.sock|unixsocket /var/run/redis/redis.sock|" /etc/redis/redis.conf
-RUN /etc/init.d/redis-server restart
 
-COPY . /staging
+# Copy the source dir
+COPY . /zeekjs-redis
 
-WORKDIR /staging
+# Set workdir during install
+WORKDIR /zeekjs-redis
 
-# This is necessary for git to recognize this directory as being safe
-RUN git config --global --add safe.directory '*'
+# Install package
+RUN zkg install . --force
 
+# Install the extra dependencies for the nodejs
+# $HOME/.node_modules is default path for nodejs
 RUN npm install
 RUN mv node_modules /root/.node_modules
 
-RUN rm package-lock.json
-RUN zkg install . --force
+# Only copy the test pcap in root and then delete tmpdir
+WORKDIR /root
+RUN mv /zeekjs-redis/testing/Traces/*.pcap /root
+RUN rm -rf /zeekjs-redis
 
 CMD /etc/init.d/redis-server start && bash
