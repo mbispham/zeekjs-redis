@@ -7,18 +7,22 @@ This [zkg](https://docs.zeek.org/projects/package-manager/en/stable/zkg.html) pa
   <img src="img/zeek-socket-redis.png" alt="ZeekJS-Redis Diagram">
 </p>
 
-The intent with the development of this package was to "[kick the tyres](https://dictionary.cambridge.org/dictionary/english/kick-the-tires)" and gain familiarity with [ZeekJS](https://zeekjs.readthedocs.io). The overall experience was positive; it was possible to create a working version of features that would have taken me much longer to develop in Zeek's standard C++ plugin architecture. Time saved enabled implemention of more involved [config options](https://github.com/mbispham/zeekjs-redis/blob/main/configure.plugin).
-
 ## Installing and configuring the plugin
 
 ### Pre-requisites
 
 You will need the following on your machine to install and configure the plugin (tip: see below how to build and use the supplied Docker container to try it out!).
 
-- Zeek installed with ZeekJS support
+- [Zeek > 6.0.2](https://github.com/zeek/zeek/blob/master/NEWS#L647) - Experimental ZeekJS supported as a builtin package
 - [zkg](https://docs.zeek.org/projects/package-manager/en/stable/index.html) Zeek package manager
-- `npm` package manager
-- a configured and running `redis-server`.
+- [redis-cli](https://redis.io/docs/latest/develop/connect/cli/)
+- [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+  - [dotenv](https://www.npmjs.com/package/dotenv)
+  - [redis](https://www.npmjs.com/package/redis)
+  - [safe-stable-stringify](https://www.npmjs.com/package/safe-stable-stringify)
+  - [validator](https://www.npmjs.com/package/validator)
+  - [winston](https://www.npmjs.com/package/winston)
+
 
 ### Install zeekjs-redis plugin
 
@@ -45,7 +49,7 @@ Note: you might have to change the systen `NODE_PATH` in order for Zeek to be ab
 
 ### Configure redis-server
 
-You will need to have `redis-server` installed and running using a unixsocket. Check the documentation on your platform but usually this is done by editing `/etc/redis/redis.conf` and adding the follwing line:
+You will need to have `redis-server` installed and running using a unixsocket. Check the documentation on your platform but usually this is done by editing `/etc/redis/redis.conf` and adding the following line:
 
 ```
 unixsocket /var/run/redis/redis.sock
@@ -133,8 +137,6 @@ Main function completed successfully.
 Refer to [here](##Run-Zeek-on-a-pcap) to learn how to retrieve the values from `redis`.
 
 
-
-
 ### Filtered Log Usage
 
 If the intention is to export specific fields from Zeek logs to Redis, an example modification to `index.js` is outlined below:
@@ -155,22 +157,12 @@ If the intention is to export specific fields from Zeek logs to Redis, an exampl
   ...
 ```
 
-### Dependencies
-
-- [Zeek > 6.0.2](https://github.com/zeek/zeek/blob/master/NEWS#L647) - Experimental ZeekJS supported as a builtin package
-- [Redis-cli](https://redis.io/docs/latest/develop/connect/cli/)
-- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-  - [dotenv](https://www.npmjs.com/package/dotenv)
-  - [redis](https://www.npmjs.com/package/redis)
-  - [safe-stable-stringify](https://www.npmjs.com/package/safe-stable-stringify)
-  - [validator](https://www.npmjs.com/package/validator)
-  - [winston](https://www.npmjs.com/package/winston)
-
 ### Acknowledgements
 
 - [**Christian Kreibich**](https://github.com/ckreibich): [Zeek](https://zeek.org/) project technical lead
 - [**Arne Welzel**](https://github.com/awelzel): Main author of [ZeekJS](https://zeekjs.readthedocs.io)
 - [**Simeon Miteff**](https://github.com/simeonmiteff): The structure of this project was inspired by Simeon's work on integrating telegram with Zeek [zeekjs-notice-telegram](https://github.com/corelight/zeekjs-notice-telegram)
+- [**Martin van Hensbergen**](https://github.com/mvhensbergen)
 - [**WRCCDC**](https://wrccdc.org): [zeekjs-redis-test.pcap](https://github.com/mbispham/zeekjs-redis/blob/main/testing/Traces/zeekjs-redis-test.pcap) is carved from a publicly available trace released under a [creative commons license](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ### License
