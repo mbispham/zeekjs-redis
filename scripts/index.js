@@ -56,9 +56,14 @@ async function processAndSendLog(client, logData, logID) {
 
   try {
     fs.appendFile(logFile, `${serializedData}\n`);
+  } catch (err) {
+    console.error('Error writing to logfile:', err);
+  }
+
+  try {
     client.rPush(redisKey, serializedData);
   } catch (err) {
-    console.error('Error writing to file or Redis:', err);
+    console.error('Error writing to redis:', err);
   }
 }
 
