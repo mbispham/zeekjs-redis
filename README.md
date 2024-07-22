@@ -45,7 +45,7 @@ The plugin will need some more `npm` modules which can be installed as follows:
 npm install
 ```
 
-Note: you might have to change the systen `NODE_PATH` in order for Zeek to be able to find them.
+Note: you might have to change the system `NODE_PATH` for Zeek to find the modules.
 
 ### Configure redis-server
 
